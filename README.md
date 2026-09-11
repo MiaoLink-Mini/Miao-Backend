@@ -4,7 +4,7 @@
 
 产品名称已更新为 **喵连**。GitHub 仓库名、协议标识和本地兼容目录保持不变，无需重新配对。
 
-[![CI](https://github.com/GoLink-Mini/GoLink-Backend/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GoLink-Mini/GoLink-Backend/actions/workflows/ci.yml)
+[![CI](https://github.com/MiaoLink-Mini/Miao-Backend/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/MiaoLink-Mini/Miao-Backend/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **连接微信小程序与开发设备的 Go Gateway。**
@@ -15,9 +15,9 @@
 
 | 组件 | 职责 |
 | --- | --- |
-| [GoLink-Frontend](https://github.com/GoLink-Mini/GoLink-Frontend) | 原生微信小程序、会话界面与移动端交互 |
-| **[GoLink-Backend](https://github.com/GoLink-Mini/GoLink-Backend)** | Go API / WebSocket 服务、协议与 PostgreSQL 持久化 |
-| [GoLink-Node](https://github.com/GoLink-Mini/GoLink-Node) | 设备守护进程，以及 Codex、Pi、Claude Code 适配 |
+| [Miao-Frontend](https://github.com/MiaoLink-Mini/Miao-Frontend) | 原生微信小程序、会话界面与移动端交互 |
+| **[Miao-Backend](https://github.com/MiaoLink-Mini/Miao-Backend)** | Go API / WebSocket 服务、协议与 PostgreSQL 持久化 |
+| [Miao-Node](https://github.com/MiaoLink-Mini/Miao-Node) | 设备守护进程，以及 Codex、Pi、Claude Code 适配 |
 
 ```text
 微信小程序  ← HTTP / WebSocket →  Gateway  ← WebSocket →  开发设备 Node
@@ -52,8 +52,8 @@ Gateway 使用项目自有协议 **`weagent/1`**，不是某个 Agent 的原生�
 ## 获取源码
 
 ```bash
-git clone https://github.com/GoLink-Mini/GoLink-Backend.git WeAgent-Backend
-git clone https://github.com/GoLink-Mini/GoLink-Frontend.git WeAgent-Frontend
+git clone https://github.com/MiaoLink-Mini/Miao-Backend.git WeAgent-Backend
+git clone https://github.com/MiaoLink-Mini/Miao-Frontend.git WeAgent-Frontend
 cd WeAgent-Backend
 ```
 
