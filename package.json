@@ -1,0 +1,25 @@
+{
+  "name": "golink-backend-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Verification tooling for 喵连 Go Gateway, canonical contracts and database fixtures",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "generate": "node scripts/generate-contracts.cjs",
+    "check:generated": "node scripts/generate-contracts.cjs --check",
+    "build:go": "go build ./cmd/...",
+    "test:go": "go test ./...",
+    "test": "node --test --test-concurrency=1 tests/*.test.cjs",
+    "test:contracts": "node --test tests/contracts.test.cjs",
+    "test:database": "node --test tests/database.test.cjs",
+    "test:frontend": "node --test tests/frontend.test.cjs"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "13.0.0",
+    "@electric-sql/pglite": "0.5.8",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  }
+}

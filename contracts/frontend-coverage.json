@@ -1,0 +1,1751 @@
+{
+  "description": "Design responsibility, not implementation completion.",
+  "requirements": [
+    {
+      "id": "A01",
+      "name": "微信登录",
+      "frontendStatus": "待接入",
+      "route": "/pages/login/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "A02",
+      "name": "登录失效恢复",
+      "frontendStatus": "待接入",
+      "route": "/pages/login/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "A03",
+      "name": "首次使用引导",
+      "frontendStatus": "演示交互",
+      "route": "/pages/login/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "A04",
+      "name": "当前账号信息",
+      "frontendStatus": "演示交互",
+      "route": "/pages/login/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "A05",
+      "name": "退出登录",
+      "frontendStatus": "演示交互",
+      "route": "/pages/login/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "A06",
+      "name": "未授权页面",
+      "frontendStatus": "演示交互",
+      "route": "/pages/login/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "A07",
+      "name": "启动与服务不可用",
+      "frontendStatus": "待接入",
+      "route": "/pages/login/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "A08",
+      "name": "历史入口恢复",
+      "frontendStatus": "待接入",
+      "route": "/pages/login/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "B01",
+      "name": "待处理摘要",
+      "frontendStatus": "演示交互",
+      "route": "/pages/home/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "B02",
+      "name": "设备在线概览",
+      "frontendStatus": "演示交互",
+      "route": "/pages/home/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "B03",
+      "name": "运行中会话概览",
+      "frontendStatus": "演示交互",
+      "route": "/pages/home/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "B04",
+      "name": "最近项目",
+      "frontendStatus": "演示交互",
+      "route": "/pages/home/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "B05",
+      "name": "最近会话",
+      "frontendStatus": "演示交互",
+      "route": "/pages/home/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "B06",
+      "name": "快速开始",
+      "frontendStatus": "演示交互",
+      "route": "/pages/home/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "B07",
+      "name": "四个一级入口",
+      "frontendStatus": "演示交互",
+      "route": "/pages/home/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "C01",
+      "name": "设备列表",
+      "frontendStatus": "演示交互",
+      "route": "/pages/nodes/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "C02",
+      "name": "设备详情",
+      "frontendStatus": "演示交互",
+      "route": "/pages/nodes/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "C03",
+      "name": "扫码配对",
+      "frontendStatus": "演示交互",
+      "route": "/pages/nodes/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "扫码在客户端提取短码；Gateway 只处理预览与确认。"
+    },
+    {
+      "id": "C04",
+      "name": "输入配对码",
+      "frontendStatus": "演示交互",
+      "route": "/pages/nodes/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "C05",
+      "name": "配对确认",
+      "frontendStatus": "演示交互",
+      "route": "/pages/nodes/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "C06",
+      "name": "配对失效与占用",
+      "frontendStatus": "演示交互",
+      "route": "/pages/nodes/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "C07",
+      "name": "配对取消",
+      "frontendStatus": "演示交互",
+      "route": "/pages/nodes/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "C08",
+      "name": "撤销设备",
+      "frontendStatus": "演示交互",
+      "route": "/pages/nodes/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "C09",
+      "name": "已撤销设备记录",
+      "frontendStatus": "演示交互",
+      "route": "/pages/nodes/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "允许列出本人 revoked Node 元数据；关联历史和控制均撤权。"
+    },
+    {
+      "id": "C10",
+      "name": "设备连接诊断",
+      "frontendStatus": "演示交互",
+      "route": "/pages/nodes/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "元数据连接诊断；不提供测试用在线开关。"
+    },
+    {
+      "id": "C11",
+      "name": "设备版本与升级提示",
+      "frontendStatus": "待接入",
+      "route": "/pages/nodes/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "D01",
+      "name": "项目列表",
+      "frontendStatus": "演示交互",
+      "route": "/pages/projects/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "D02",
+      "name": "项目详情",
+      "frontendStatus": "演示交互",
+      "route": "/pages/projects/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "D03",
+      "name": "项目内新建会话",
+      "frontendStatus": "演示交互",
+      "route": "/pages/projects/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "D04",
+      "name": "项目会话筛选",
+      "frontendStatus": "演示交互",
+      "route": "/pages/projects/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "D05",
+      "name": "无项目引导",
+      "frontendStatus": "演示交互",
+      "route": "/pages/projects/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "D06",
+      "name": "目录失效与访问失败",
+      "frontendStatus": "演示交互",
+      "route": "/pages/projects/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "D07",
+      "name": "工作副本与并行提示",
+      "frontendStatus": "待接入",
+      "route": "/pages/projects/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "D08",
+      "name": "项目显示信息刷新",
+      "frontendStatus": "待接入",
+      "route": "/pages/projects/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "E01",
+      "name": "已登记 Agent 列表",
+      "frontendStatus": "演示交互",
+      "route": "/pages/capabilities/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "E02",
+      "name": "Agent 可用性",
+      "frontendStatus": "待接入",
+      "route": "/pages/capabilities/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "E03",
+      "name": "版本与运行模式",
+      "frontendStatus": "演示交互",
+      "route": "/pages/capabilities/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "只读版本与可用性；不包含切换运行模式。"
+    },
+    {
+      "id": "E04",
+      "name": "逐项能力清单",
+      "frontendStatus": "演示交互",
+      "route": "/pages/capabilities/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "E05",
+      "name": "能力限制说明",
+      "frontendStatus": "演示交互",
+      "route": "/pages/capabilities/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "会话和 Agent 能力快照由 Node/Gateway 提供，限制说明客户端展示。"
+    },
+    {
+      "id": "E06",
+      "name": "Agent 认证状态",
+      "frontendStatus": "待接入",
+      "route": "/pages/capabilities/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "E07",
+      "name": "重新认证引导",
+      "frontendStatus": "待接入",
+      "route": "/pages/capabilities/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "E08",
+      "name": "认证取消、超时与完成",
+      "frontendStatus": "待接入",
+      "route": "/pages/capabilities/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "E09",
+      "name": "配置与扩展加载诊断",
+      "frontendStatus": "待接入",
+      "route": "/pages/capabilities/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "F01",
+      "name": "统一会话列表",
+      "frontendStatus": "演示交互",
+      "route": "/pages/sessions/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "F02",
+      "name": "搜索与筛选",
+      "frontendStatus": "演示交互",
+      "route": "/pages/sessions/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "F03",
+      "name": "新建托管会话",
+      "frontendStatus": "演示交互",
+      "route": "/pages/sessions/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "F04",
+      "name": "继续当前会话",
+      "frontendStatus": "演示交互",
+      "route": "/pages/sessions/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "F05",
+      "name": "浏览历史会话",
+      "frontendStatus": "演示交互",
+      "route": "/pages/sessions/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "F06",
+      "name": "恢复历史会话",
+      "frontendStatus": "待接入",
+      "route": "/pages/sessions/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "F07",
+      "name": "连接运行中的会话",
+      "frontendStatus": "待接入",
+      "route": "/pages/sessions/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "F08",
+      "name": "会话命名",
+      "frontendStatus": "待接入",
+      "route": "/pages/sessions/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "F09",
+      "name": "会话置顶与标签",
+      "frontendStatus": "待接入",
+      "route": "/pages/sessions/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "F10",
+      "name": "归档与取消归档",
+      "frontendStatus": "待接入",
+      "route": "/pages/sessions/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "F11",
+      "name": "历史删除与保留范围",
+      "frontendStatus": "扩展规划",
+      "route": "/pages/sessions/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "F12",
+      "name": "会话分支",
+      "frontendStatus": "待接入",
+      "route": "/pages/sessions/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "F13",
+      "name": "分支树与克隆",
+      "frontendStatus": "待接入",
+      "route": "/pages/sessions/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "F14",
+      "name": "导入与导出会话",
+      "frontendStatus": "待接入",
+      "route": "/pages/sessions/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "F15",
+      "name": "关闭托管会话",
+      "frontendStatus": "待接入",
+      "route": "/pages/sessions/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "G01",
+      "name": "多行文字输入",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "G02",
+      "name": "会话独立草稿",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "G03",
+      "name": "发送与送达进度",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "G04",
+      "name": "运行中追加指令",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "G05",
+      "name": "完成后排队",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "G06",
+      "name": "队列查看与处理策略",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "v1 仅查看和顺序消费；取消/失败保留，重连不自动执行；无改序/删除。"
+    },
+    {
+      "id": "G07",
+      "name": "图片选择与预览",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "G08",
+      "name": "附件传输状态",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "G09",
+      "name": "类型与大小限制",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "G10",
+      "name": "项目文件引用",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "G11",
+      "name": "Skills 与命令选择",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "G12",
+      "name": "重复提交与不确定结果",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "G13",
+      "name": "取消当前轮次",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "H01",
+      "name": "用户和 Agent 消息",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "H02",
+      "name": "流式输出",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "H03",
+      "name": "代码、表格与长文本",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "基础纯文本/可复制内容；高级表格与代码渲染需前端实现，不承诺现有 UI 完成。"
+    },
+    {
+      "id": "H04",
+      "name": "公开推理摘要与状态",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "只支持 Node 明确提供的公开状态摘要；不采集私有思维链。"
+    },
+    {
+      "id": "H05",
+      "name": "工具调用卡片",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "H06",
+      "name": "工具结果与输出截断",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "H07",
+      "name": "计划与 Diff 卡片",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "H08",
+      "name": "最终结果与产物",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "v1 只含文本结果和 Diff 快照；二进制成果另行设计。"
+    },
+    {
+      "id": "H09",
+      "name": "历史分页和定位",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "H10",
+      "name": "复制与引用已有文本",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "H11",
+      "name": "未知事件与警告",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "未知展示事件 fallback 仍消费 seq；未知控制永不执行。"
+    },
+    {
+      "id": "H12",
+      "name": "结构化结果展示",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "I01",
+      "name": "待审批列表",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "I02",
+      "name": "审批详情",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "I03",
+      "name": "允许一次",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "I04",
+      "name": "会话范围允许",
+      "frontendStatus": "待接入",
+      "route": "/pages/inbox/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "仅 Node 明确上报的 choiceId；Gateway 不合成会话级授权。"
+    },
+    {
+      "id": "I05",
+      "name": "拒绝请求",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "I06",
+      "name": "文件、命令、网络审批",
+      "frontendStatus": "待接入",
+      "route": "/pages/inbox/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "v1 action/scope 纯文本摘要与已有 choice；没有任意结构化权限编辑器。"
+    },
+    {
+      "id": "I07",
+      "name": "权限子集选择",
+      "frontendStatus": "待接入",
+      "route": "/pages/inbox/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "I08",
+      "name": "提交中和回传中",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "I09",
+      "name": "过期、取消和请求消失",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "I10",
+      "name": "多端已处理与重复点击",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "I11",
+      "name": "审批历史与结果追踪",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "J01",
+      "name": "待回答列表",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "J02",
+      "name": "单选与多选问题",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "J03",
+      "name": "自由输入与补充回答",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "J04",
+      "name": "多问题表单",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "J05",
+      "name": "扩展确认",
+      "frontendStatus": "待接入",
+      "route": "/pages/inbox/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "J06",
+      "name": "扩展多行编辑",
+      "frontendStatus": "待接入",
+      "route": "/pages/inbox/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "J07",
+      "name": "扩展通知、状态与文本组件",
+      "frontendStatus": "待接入",
+      "route": "/pages/inbox/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "J08",
+      "name": "扩展标题与输入框预填",
+      "frontendStatus": "待接入",
+      "route": "/pages/inbox/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "J09",
+      "name": "外部授权或 URL 交互",
+      "frontendStatus": "待接入",
+      "route": "/pages/inbox/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "J10",
+      "name": "不支持的自定义界面",
+      "frontendStatus": "待接入",
+      "route": "/pages/inbox/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "J11",
+      "name": "取消、超时与迟到回答",
+      "frontendStatus": "待接入",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "过期、取消与迟到答复属于 v1 强制约束，不因前端标待接入而忽略。"
+    },
+    {
+      "id": "K01",
+      "name": "可用模型列表",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "K02",
+      "name": "模型切换",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "K03",
+      "name": "推理档位与思考设置",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "K04",
+      "name": "运行或规划模式",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "K05",
+      "name": "权限与沙盒方案",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "K06",
+      "name": "有效配置来源",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "现有演示面板不是已确认的原生有效配置协议。"
+    },
+    {
+      "id": "K07",
+      "name": "配置生效范围",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "K08",
+      "name": "指令与记忆来源",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "K09",
+      "name": "输出风格与结果格式",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "K10",
+      "name": "支持的子 Agent 选择",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "K11",
+      "name": "配置写入与重置覆盖",
+      "frontendStatus": "扩展规划",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "L01",
+      "name": "计划查看",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "L02",
+      "name": "计划更新和轮次关联",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "L03",
+      "name": "会话目标",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "L04",
+      "name": "待办与依赖关系",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "L05",
+      "name": "子任务列表",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "L06",
+      "name": "子任务详情",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "L07",
+      "name": "停止单个后台任务",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "L08",
+      "name": "后台命令状态",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "L09",
+      "name": "后台进程终止",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "L10",
+      "name": "代码审查结果",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "M01",
+      "name": "文件改动摘要",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "M02",
+      "name": "Diff 文件列表",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "M03",
+      "name": "逐行 Diff",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "M04",
+      "name": "改动来源与版本",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "保留 event/turn 来源；不承诺完整 Git 版本对比。"
+    },
+    {
+      "id": "M05",
+      "name": "授权文件浏览",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "M06",
+      "name": "文本与代码只读查看",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "仅已捕获 Diff 快照/变更片段，不是完整主机文件浏览。"
+    },
+    {
+      "id": "M07",
+      "name": "图片与二进制成果",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "M08",
+      "name": "生成文件列表",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "M09",
+      "name": "下载或导出结果",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "M10",
+      "name": "文件变更提醒",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "M11",
+      "name": "检查点与还原预览",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "M12",
+      "name": "执行文件还原",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N01",
+      "name": "Skills 列表与详情",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N02",
+      "name": "调用 Skill",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N03",
+      "name": "命令与提示模板目录",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "本地 /help 等预测不等于原生 slash/Skill 目录。"
+    },
+    {
+      "id": "N04",
+      "name": "扩展重新发现",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N05",
+      "name": "Skill 启用状态",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N06",
+      "name": "MCP 服务状态",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N07",
+      "name": "MCP 工具与资源目录",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N08",
+      "name": "MCP 重新连接与启停",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N09",
+      "name": "MCP 授权与提问",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N10",
+      "name": "插件、连接器与 hooks 状态",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N11",
+      "name": "扩展加载错误详情",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "N12",
+      "name": "安装、卸载和新增配置",
+      "frontendStatus": "扩展规划",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "O01",
+      "name": "本轮用量",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "O02",
+      "name": "会话累计用量",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "O03",
+      "name": "费用展示",
+      "frontendStatus": "演示交互",
+      "route": "/pages/panel/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "仅展示 Adapter 上报数额/币种；缺失 null，不推算账单。"
+    },
+    {
+      "id": "O04",
+      "name": "账号额度与限流",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "O05",
+      "name": "上下文占用",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "O06",
+      "name": "手动压缩",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "O07",
+      "name": "自动压缩状态与开关",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "O08",
+      "name": "压缩摘要与失败",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "O09",
+      "name": "自动重试状态",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "O10",
+      "name": "重试策略",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "O11",
+      "name": "停止重试",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "O12",
+      "name": "达到限制后的恢复",
+      "frontendStatus": "待接入",
+      "route": "/pages/panel/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "P01",
+      "name": "统一待处理入口",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "P02",
+      "name": "未读与已读",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "P03",
+      "name": "优先级与筛选",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "v1 pending/history 分组与时间顺序；自定义优先级协议后续。"
+    },
+    {
+      "id": "P04",
+      "name": "通知定位",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "P05",
+      "name": "资源失效通知",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "P06",
+      "name": "通知偏好",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "P07",
+      "name": "微信订阅消息",
+      "frontendStatus": "扩展规划",
+      "route": "/pages/inbox/index",
+      "owner": "deferred",
+      "backendImplemented": false,
+      "note": "不在本版协议内；需后续能力与原生适配验收。"
+    },
+    {
+      "id": "P08",
+      "name": "回到小程序后同步待办",
+      "frontendStatus": "演示交互",
+      "route": "/pages/inbox/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "Q01",
+      "name": "连接状态显示",
+      "frontendStatus": "演示交互",
+      "route": "/pages/diagnostics/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "Q02",
+      "name": "前后台切换恢复",
+      "frontendStatus": "演示交互",
+      "route": "/pages/diagnostics/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "Q03",
+      "name": "切换网络与弱网",
+      "frontendStatus": "演示交互",
+      "route": "/pages/diagnostics/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "Q04",
+      "name": "Node 离线",
+      "frontendStatus": "演示交互",
+      "route": "/pages/diagnostics/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "Q05",
+      "name": "网关重启与连接替换",
+      "frontendStatus": "待接入",
+      "route": "/pages/diagnostics/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "Q06",
+      "name": "历史补齐与事件去重",
+      "frontendStatus": "演示交互",
+      "route": "/pages/diagnostics/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "Q07",
+      "name": "未完成消息恢复",
+      "frontendStatus": "演示交互",
+      "route": "/pages/diagnostics/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "Q08",
+      "name": "冷启动历史基线",
+      "frontendStatus": "演示交互",
+      "route": "/pages/diagnostics/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "Q09",
+      "name": "历史保留期过期",
+      "frontendStatus": "待接入",
+      "route": "/pages/diagnostics/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "Q10",
+      "name": "命令结果未知与对账",
+      "frontendStatus": "演示交互",
+      "route": "/pages/diagnostics/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "Q11",
+      "name": "多端查看与控制冲突",
+      "frontendStatus": "待接入",
+      "route": "/pages/diagnostics/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "Q12",
+      "name": "主机进程丢失或崩溃",
+      "frontendStatus": "待接入",
+      "route": "/pages/diagnostics/index",
+      "owner": "node-v1",
+      "backendImplemented": false,
+      "note": "Node/Adapter 为运行事实权威；Gateway 校验、持久化并转发，真实适配尚未实现。"
+    },
+    {
+      "id": "R01",
+      "name": "界面偏好",
+      "frontendStatus": "演示交互",
+      "route": "/pages/settings/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "R02",
+      "name": "历史保留与内容策略",
+      "frontendStatus": "演示交互",
+      "route": "/pages/settings/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "v1 服务部署级 retention/清理；现有本地偏好不代表云端用户策略同步。"
+    },
+    {
+      "id": "R03",
+      "name": "本地缓存清理",
+      "frontendStatus": "演示交互",
+      "route": "/pages/settings/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "R04",
+      "name": "权限撤销后的界面",
+      "frontendStatus": "演示交互",
+      "route": "/pages/settings/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "服务端撤销栅栏 + 客户端级联清理，二者都必须做。"
+    },
+    {
+      "id": "R05",
+      "name": "操作记录",
+      "frontendStatus": "演示交互",
+      "route": "/pages/settings/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "Gateway v1 设计范围；仍需 Go 服务及跨进程联调实现。"
+    },
+    {
+      "id": "R06",
+      "name": "连接与协议诊断",
+      "frontendStatus": "演示交互",
+      "route": "/pages/settings/index",
+      "owner": "gateway-v1",
+      "backendImplemented": false,
+      "note": "只读脱敏诊断；fake emit/setOnline 不暴露到公网。"
+    },
+    {
+      "id": "R07",
+      "name": "帮助与版本说明",
+      "frontendStatus": "演示交互",
+      "route": "/pages/settings/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "R08",
+      "name": "字体与可读性",
+      "frontendStatus": "待接入",
+      "route": "/pages/settings/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "R09",
+      "name": "键盘与安全区域",
+      "frontendStatus": "待接入",
+      "route": "/pages/settings/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "R10",
+      "name": "长列表与流式性能",
+      "frontendStatus": "待接入",
+      "route": "/pages/settings/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "R11",
+      "name": "空、加载、失败与局部失败",
+      "frontendStatus": "演示交互",
+      "route": "/pages/settings/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    },
+    {
+      "id": "R12",
+      "name": "链接、复制与外部打开",
+      "frontendStatus": "待接入",
+      "route": "/pages/settings/index",
+      "owner": "client-local",
+      "backendImplemented": false,
+      "note": "前端职责；依赖已授权数据，不为纯 UI 行为新增后端控制接口。"
+    }
+  ]
+}

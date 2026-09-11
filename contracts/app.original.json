@@ -1,0 +1,70 @@
+{
+  "pages": [
+    "pages/login/index",
+    "pages/home/index",
+    "pages/sessions/index",
+    "pages/inbox/index",
+    "pages/me/index",
+    "pages/nodes/index",
+    "pages/node/index",
+    "pages/projects/index",
+    "pages/project/index",
+    "pages/pair/index",
+    "pages/create/index",
+    "pages/session/index",
+    "pages/request/index",
+    "pages/agent/index",
+    "pages/panel/index",
+    "pages/file/index",
+    "pages/capabilities/index",
+    "pages/requirement/index",
+    "pages/settings/index",
+    "pages/diagnostics/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "WeAgent",
+    "navigationBarBackgroundColor": "#000000",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#000000",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#858580",
+    "selectedColor": "#f4f4f1",
+    "backgroundColor": "#090909",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "总览",
+        "iconPath": "assets/tab-home.png",
+        "selectedIconPath": "assets/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/sessions/index",
+        "text": "会话",
+        "iconPath": "assets/tab-sessions.png",
+        "selectedIconPath": "assets/tab-sessions-active.png"
+      },
+      {
+        "pagePath": "pages/inbox/index",
+        "text": "待处理",
+        "iconPath": "assets/tab-inbox.png",
+        "selectedIconPath": "assets/tab-inbox-active.png"
+      },
+      {
+        "pagePath": "pages/me/index",
+        "text": "我的",
+        "iconPath": "assets/tab-me.png",
+        "selectedIconPath": "assets/tab-me-active.png"
+      }
+    ]
+  },
+  "usingComponents": {
+    "connection-bar": "/components/connection-bar/index",
+    "session-card": "/components/session-card/index",
+    "event-card": "/components/event-card/index"
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}

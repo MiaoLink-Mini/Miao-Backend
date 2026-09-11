@@ -1,0 +1,33 @@
+{
+    admin off
+}
+agent.000.moe {
+    header {
+        -Server
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy no-referrer
+        Strict-Transport-Security "max-age=31536000"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    }
+    @private path /.* /private/* /.runtime/* /node_modules/* /scripts/* /docs/* /go.mod /go.sum /package.json /package-lock.json /compose.yaml /Dockerfile /Caddyfile
+    respond @private 404
+    @api path /v1/* /healthz /readyz
+    handle @api {
+        header Cache-Control "no-store, private"
+        request_body {
+            max_size 128KB
+        }
+        reverse_proxy gateway:8080 {
+            # Never trust client-supplied forwarding headers.
+            header_up X-Real-IP {remote_host}
+            header_up -X-Forwarded-For
+        }
+    }
+    handle {
+        header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+        root * /srv
+        encode zstd gzip
+        file_server
+    }
+}

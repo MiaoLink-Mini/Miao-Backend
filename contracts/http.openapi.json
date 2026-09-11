@@ -1,0 +1,2945 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "喵连 Gateway API",
+    "version": "0.1.0",
+    "description": "Design-stage contract weagent/1. Paths are project-owned, not Agent-native APIs. HTTPS only outside local development. JSON Schema is canonical; WebSocket frames are defined in protocol.schema.json."
+  },
+  "servers": [
+    {
+      "url": "https://gateway.example.invalid",
+      "description": "Placeholder; not a deployed service"
+    }
+  ],
+  "security": [
+    {
+      "UserBearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth"
+    },
+    {
+      "name": "resources"
+    },
+    {
+      "name": "commands"
+    },
+    {
+      "name": "recovery"
+    },
+    {
+      "name": "pairing"
+    },
+    {
+      "name": "node"
+    },
+    {
+      "name": "health"
+    },
+    {
+      "name": "sharing",
+      "description": "Explicit, expiring single-session delegation. Does not grant access to owner resource APIs or native configuration."
+    }
+  ],
+  "paths": {
+    "/healthz": {
+      "get": {
+        "operationId": "health",
+        "tags": [
+          "health"
+        ],
+        "summary": "Process health",
+        "responses": {
+          "200": {
+            "description": "Process health",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Health"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/readyz": {
+      "get": {
+        "operationId": "ready",
+        "tags": [
+          "health"
+        ],
+        "summary": "Database and drain readiness",
+        "responses": {
+          "200": {
+            "description": "Database and drain readiness",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Health"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/auth/wechat": {
+      "post": {
+        "operationId": "login",
+        "tags": [
+          "auth"
+        ],
+        "summary": "Exchange a fresh wx.login code",
+        "responses": {
+          "200": {
+            "description": "Exchange a fresh wx.login code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/LoginResult"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/Login"
+              }
+            }
+          }
+        },
+        "security": [],
+        "description": "Provider credentials stay on Gateway. Real AppID/legal-domain/provider validation remains an integration gate."
+      }
+    },
+    "/v1/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "tags": [
+          "auth"
+        ],
+        "summary": "Invalidate current user token and its client sockets",
+        "responses": {
+          "200": {
+            "description": "Invalidate current user token and its client sockets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Health"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/Empty"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/bootstrap": {
+      "get": {
+        "operationId": "bootstrap",
+        "tags": [
+          "resources"
+        ],
+        "summary": "Consistent first-page resources and user revision",
+        "responses": {
+          "200": {
+            "description": "Consistent first-page resources and user revision",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Bootstrap"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/nodes": {
+      "get": {
+        "operationId": "listNodes",
+        "tags": [
+          "resources"
+        ],
+        "summary": "List authorized nodes",
+        "responses": {
+          "200": {
+            "description": "List authorized nodes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/NodesPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ]
+      }
+    },
+    "/v1/projects": {
+      "get": {
+        "operationId": "listProjects",
+        "tags": [
+          "resources"
+        ],
+        "summary": "List authorized projects",
+        "responses": {
+          "200": {
+            "description": "List authorized projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ProjectsPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "nodeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "nodeId"
+          }
+        ]
+      }
+    },
+    "/v1/agents": {
+      "get": {
+        "operationId": "listAgents",
+        "tags": [
+          "resources"
+        ],
+        "summary": "List authorized agents",
+        "responses": {
+          "200": {
+            "description": "List authorized agents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/AgentsPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "nodeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "nodeId"
+          }
+        ]
+      }
+    },
+    "/v1/sessions": {
+      "get": {
+        "operationId": "listSessions",
+        "tags": [
+          "resources"
+        ],
+        "summary": "List authorized sessions",
+        "responses": {
+          "200": {
+            "description": "List authorized sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/SessionsPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "nodeId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "nodeId"
+          },
+          {
+            "name": "projectId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "projectId"
+          },
+          {
+            "name": "agentId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "agentId"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/SessionState"
+            },
+            "description": "state"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            },
+            "description": "Escaped title search, not content/full-text search."
+          },
+          {
+            "name": "archived",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "pinned",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createSession",
+        "tags": [
+          "commands"
+        ],
+        "summary": "Create managed session and initial turn",
+        "responses": {
+          "202": {
+            "description": "Operation receipt: confirmed means native acceptance, NOT turn completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/CreateSession"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/requests": {
+      "get": {
+        "operationId": "listRequests",
+        "tags": [
+          "resources"
+        ],
+        "summary": "List authorized requests",
+        "responses": {
+          "200": {
+            "description": "List authorized requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/RequestsPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "bucket",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "history"
+              ],
+              "default": "pending"
+            },
+            "description": "bucket"
+          },
+          {
+            "name": "sessionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "description": "sessionId"
+          }
+        ]
+      }
+    },
+    "/v1/notifications": {
+      "get": {
+        "operationId": "listNotifications",
+        "tags": [
+          "resources"
+        ],
+        "summary": "List authorized notifications",
+        "responses": {
+          "200": {
+            "description": "List authorized notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/NotificationsPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "unread",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "unread"
+          }
+        ]
+      }
+    },
+    "/v1/audit": {
+      "get": {
+        "operationId": "listAudits",
+        "tags": [
+          "resources"
+        ],
+        "summary": "List authorized audit",
+        "responses": {
+          "200": {
+            "description": "List authorized audit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/AuditsPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ]
+      }
+    },
+    "/v1/nodes/{id}": {
+      "get": {
+        "operationId": "getNode",
+        "tags": [
+          "resources"
+        ],
+        "summary": "Get authorized nodes",
+        "responses": {
+          "200": {
+            "description": "Get authorized nodes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Node"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/projects/{id}": {
+      "get": {
+        "operationId": "getProject",
+        "tags": [
+          "resources"
+        ],
+        "summary": "Get authorized projects",
+        "responses": {
+          "200": {
+            "description": "Get authorized projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Project"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/agents/{id}": {
+      "get": {
+        "operationId": "getAgent",
+        "tags": [
+          "resources"
+        ],
+        "summary": "Get authorized agents",
+        "responses": {
+          "200": {
+            "description": "Get authorized agents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Agent"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{id}": {
+      "get": {
+        "operationId": "getSession",
+        "tags": [
+          "resources"
+        ],
+        "summary": "Get authorized sessions",
+        "responses": {
+          "200": {
+            "description": "Get authorized sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Session"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/requests/{id}": {
+      "get": {
+        "operationId": "getInteractionRequest",
+        "tags": [
+          "resources"
+        ],
+        "summary": "Get authorized requests",
+        "responses": {
+          "200": {
+            "description": "Get authorized requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/InteractionRequest"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{id}/messages": {
+      "post": {
+        "operationId": "sendMessage",
+        "tags": [
+          "commands"
+        ],
+        "summary": "Continue the same session or explicitly queue after current turn",
+        "responses": {
+          "202": {
+            "description": "Operation receipt: confirmed means native acceptance, NOT turn completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/SendMessage"
+              }
+            }
+          }
+        },
+        "description": "Reject offline, readonly, stale-turn and capability mismatch. queue is a Node-local ordered queue, not a Gateway reconnect backlog. V1 has no steer, PTY or generic native command endpoint."
+      }
+    },
+    "/v1/sessions/{id}/cancel": {
+      "post": {
+        "operationId": "cancelTurn",
+        "tags": [
+          "commands"
+        ],
+        "summary": "Cancel the specified current turn",
+        "responses": {
+          "202": {
+            "description": "Operation receipt: confirmed means native acceptance, NOT turn completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/CancelTurn"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/requests/{id}/respond": {
+      "post": {
+        "operationId": "respondRequest",
+        "tags": [
+          "commands"
+        ],
+        "summary": "Resolve approval or answer typed questions",
+        "responses": {
+          "202": {
+            "description": "Operation receipt: confirmed means native acceptance, NOT turn completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/RespondRequest"
+              }
+            }
+          }
+        },
+        "description": "Server also validates question/option IDs, required fields, type, uniqueness and limits against the stored request. JSON Schema validation alone is not sufficient."
+      }
+    },
+    "/v1/operations/{id}": {
+      "get": {
+        "operationId": "getOperation",
+        "tags": [
+          "commands"
+        ],
+        "summary": "Reconcile a receipt without replaying its command",
+        "responses": {
+          "200": {
+            "description": "Operation receipt: confirmed means native acceptance, NOT turn completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/pairings/preview": {
+      "post": {
+        "operationId": "previewPairing",
+        "tags": [
+          "pairing"
+        ],
+        "summary": "Preview one-use pairing code without binding",
+        "responses": {
+          "200": {
+            "description": "Preview one-use pairing code without binding",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/PairPreview"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/PairPreviewInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pairings/confirm": {
+      "post": {
+        "operationId": "confirmPairing",
+        "tags": [
+          "pairing"
+        ],
+        "summary": "Atomically claim unexpired preview ticket",
+        "responses": {
+          "200": {
+            "description": "Operation receipt: confirmed means native acceptance, NOT turn completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/PairConfirm"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/nodes/{id}/revoke": {
+      "post": {
+        "operationId": "revokeNode",
+        "tags": [
+          "pairing"
+        ],
+        "summary": "Revoke access, identity and active Node socket",
+        "responses": {
+          "200": {
+            "description": "Operation receipt: confirmed means native acceptance, NOT turn completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/Empty"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notifications/{id}/read": {
+      "post": {
+        "operationId": "markNotificationRead",
+        "tags": [
+          "resources"
+        ],
+        "summary": "Idempotently mark own notification as read",
+        "responses": {
+          "200": {
+            "description": "Operation receipt: confirmed means native acceptance, NOT turn completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/Empty"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/changes": {
+      "get": {
+        "operationId": "listChanges",
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Page user metadata changes to a fixed barrier",
+        "responses": {
+          "200": {
+            "description": "Page user metadata changes to a fixed barrier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ChangesPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "after"
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "until"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 100
+            },
+            "description": "limit"
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{id}/events": {
+      "get": {
+        "operationId": "listEvents",
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Page contiguous durable events to a fixed barrier",
+        "responses": {
+          "200": {
+            "description": "Page contiguous durable events to a fixed barrier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/EventsPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "after"
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "until"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 100
+            },
+            "description": "limit"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ],
+        "description": "after defaults to zero. First response pins highWater unless until supplied. Subsequent pages use same until. Retained prefix missing: 410 CURSOR_EXPIRED; never silently skip."
+      }
+    },
+    "/v1/sessions/{id}/checkpoint": {
+      "get": {
+        "operationId": "getCheckpoint",
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Pin an immutable full-timeline checkpoint",
+        "responses": {
+          "200": {
+            "description": "Pin an immutable full-timeline checkpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Checkpoint"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/checkpoints/{id}/items": {
+      "get": {
+        "operationId": "getCheckpointItems",
+        "tags": [
+          "recovery"
+        ],
+        "summary": "Page one pinned checkpoint before installing its cursor",
+        "responses": {
+          "200": {
+            "description": "Page one pinned checkpoint before installing its cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/CheckpointItemsPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/diff-files/{id}": {
+      "get": {
+        "operationId": "getDiffFile",
+        "tags": [
+          "resources"
+        ],
+        "summary": "Read a captured diff snapshot by resource ID, not a host path",
+        "responses": {
+          "200": {
+            "description": "Read a captured diff snapshot by resource ID, not a host path",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/DiffFile"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/node/enrollments": {
+      "post": {
+        "operationId": "createEnrollment",
+        "tags": [
+          "node"
+        ],
+        "summary": "Register a fresh public key and create short-lived pairing code",
+        "responses": {
+          "200": {
+            "description": "Register a fresh public key and create short-lived pairing code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Enrollment"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/EnrollmentInput"
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/node/enrollments/{id}": {
+      "get": {
+        "operationId": "pollEnrollment",
+        "tags": [
+          "node"
+        ],
+        "summary": "Poll binding status using enrollment-scoped secret",
+        "responses": {
+          "200": {
+            "description": "Poll binding status using enrollment-scoped secret",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/EnrollmentStatus"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "EnrollmentPoll": []
+          }
+        ]
+      }
+    },
+    "/v1/node/auth/challenges": {
+      "post": {
+        "operationId": "createNodeChallenge",
+        "tags": [
+          "node"
+        ],
+        "summary": "Issue one-use node identity challenge",
+        "responses": {
+          "200": {
+            "description": "Issue one-use node identity challenge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/NodeChallenge"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/NodeChallengeInput"
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/node/auth/prove": {
+      "post": {
+        "operationId": "proveNodeIdentity",
+        "tags": [
+          "node"
+        ],
+        "summary": "Verify signature and issue short-lived Node token",
+        "responses": {
+          "200": {
+            "description": "Verify signature and issue short-lived Node token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/NodeToken"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/NodeProof"
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/sessions/{id}/native": {
+      "post": {
+        "operationId": "nativeControl",
+        "tags": [
+          "commands"
+        ],
+        "summary": "Read native models, select a session model or explicitly compact context",
+        "responses": {
+          "202": {
+            "description": "Durable typed receipt. Codex set_model applied=false stages the next-turn override; compact started is native acceptance, not completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/NativeControl"
+              }
+            }
+          }
+        },
+        "description": "Allowlisted typed actions only. Idle managed sessions, advertised capabilities, epoch/turn/revision and durable operation fencing are required. No generic RPC, slash execution, global config write or host file access."
+      }
+    },
+    "/v1/sessions/{id}/metadata": {
+      "post": {
+        "operationId": "organizeSession",
+        "tags": [
+          "commands"
+        ],
+        "summary": "organizeSession",
+        "responses": {
+          "202": {
+            "description": "Durable typed receipt. Codex set_model applied=false stages the next-turn override; compact started is native acceptance, not completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/SessionMetadata"
+              }
+            }
+          }
+        },
+        "description": "Allowlisted typed actions only. Idle managed sessions, advertised capabilities, epoch/turn/revision and durable operation fencing are required. No generic RPC, slash execution, global config write or host file access."
+      }
+    },
+    "/v1/sessions/{id}/history/delete": {
+      "post": {
+        "operationId": "deleteHistory",
+        "tags": [
+          "commands"
+        ],
+        "summary": "deleteHistory",
+        "responses": {
+          "202": {
+            "description": "Durable typed receipt. Codex set_model applied=false stages the next-turn override; compact started is native acceptance, not completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/DeleteHistory"
+              }
+            }
+          }
+        },
+        "description": "Allowlisted typed actions only. Idle managed sessions, advertised capabilities, epoch/turn/revision and durable operation fencing are required. No generic RPC, slash execution, global config write or host file access."
+      }
+    },
+    "/v1/sessions/{id}/export": {
+      "get": {
+        "operationId": "exportHistory",
+        "tags": [
+          "commands"
+        ],
+        "summary": "exportHistory",
+        "responses": {
+          "200": {
+            "description": "Durable typed receipt. Codex set_model applied=false stages the next-turn override; compact started is native acceptance, not completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/HistoryExport"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "description": "Allowlisted typed actions only. Idle managed sessions, advertised capabilities, epoch/turn/revision and durable operation fencing are required. No generic RPC, slash execution, global config write or host file access."
+      }
+    },
+    "/v1/history/import": {
+      "post": {
+        "operationId": "importHistory",
+        "tags": [
+          "commands"
+        ],
+        "summary": "importHistory",
+        "responses": {
+          "202": {
+            "description": "Durable typed receipt. Codex set_model applied=false stages the next-turn override; compact started is native acceptance, not completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/ImportHistory"
+              }
+            }
+          }
+        },
+        "description": "Allowlisted typed actions only. Idle managed sessions, advertised capabilities, epoch/turn/revision and durable operation fencing are required. No generic RPC, slash execution, global config write or host file access."
+      }
+    },
+    "/v1/subscriptions/config": {
+      "get": {
+        "operationId": "getSubscriptionConfig",
+        "tags": [
+          "commands"
+        ],
+        "summary": "getSubscriptionConfig",
+        "responses": {
+          "200": {
+            "description": "Durable typed receipt. Codex set_model applied=false stages the next-turn override; compact started is native acceptance, not completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/SubscriptionConfig"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "description": "Allowlisted typed actions only. Idle managed sessions, advertised capabilities, epoch/turn/revision and durable operation fencing are required. No generic RPC, slash execution, global config write or host file access."
+      }
+    },
+    "/v1/subscriptions/consent": {
+      "post": {
+        "operationId": "recordSubscriptionConsent",
+        "tags": [
+          "commands"
+        ],
+        "summary": "recordSubscriptionConsent",
+        "responses": {
+          "202": {
+            "description": "Durable typed receipt. Codex set_model applied=false stages the next-turn override; compact started is native acceptance, not completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/SubscriptionConsent"
+              }
+            }
+          }
+        },
+        "description": "Allowlisted typed actions only. Idle managed sessions, advertised capabilities, epoch/turn/revision and durable operation fencing are required. No generic RPC, slash execution, global config write or host file access."
+      }
+    },
+    "/v1/sessions/{id}/shares": {
+      "post": {
+        "operationId": "createShare",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "createShare",
+        "description": "Owner only. A 256-bit invitation binds to the first accepting authenticated recipient. 15 minutes through 7 days. Control enables only text send/queue, cancel, and typed request replies. Accepted work is not recalled on expiry. Idempotency is scoped to owner and the sharing API; plaintext invite is not stored.",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ShareInvitation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/CreateShare"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listSessionShares",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "listSessionShares",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ShareList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ]
+      }
+    },
+    "/v1/session-shares": {
+      "get": {
+        "operationId": "listReceivedShares",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "listReceivedShares",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ShareList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ]
+      }
+    },
+    "/v1/session-shares/redeem": {
+      "post": {
+        "operationId": "redeemShare",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "redeemShare",
+        "description": "Explicit authenticated acceptance. Repeated redemption by the same recipient is idempotent; another recipient is denied. Token is in JSON only, never an HTTP URL.",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/SessionShare"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/RedeemShare"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/session-shares/{id}/revoke": {
+      "post": {
+        "operationId": "revokeShare",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "revokeShare",
+        "description": "Owner only; naturally idempotent. Takes effect on subsequent reads and command admission, not already accepted work.",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/SessionShare"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/session-shares/{id}": {
+      "get": {
+        "operationId": "getSharedSession",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "getSharedSession",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/SharedSession"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/session-shares/{id}/events": {
+      "get": {
+        "operationId": "listSharedEvents",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "listSharedEvents",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/EventsPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "after"
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "until"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 100
+            },
+            "description": "limit"
+          }
+        ]
+      }
+    },
+    "/v1/session-shares/{id}/checkpoint": {
+      "get": {
+        "operationId": "getSharedCheckpoint",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "getSharedCheckpoint",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Checkpoint"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/session-shares/{id}/checkpoints/{checkpointId}/items": {
+      "get": {
+        "operationId": "getSharedCheckpointItems",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "getSharedCheckpointItems",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/CheckpointItemsPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "name": "checkpointId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ]
+      }
+    },
+    "/v1/session-shares/{id}/files/{fileId}": {
+      "get": {
+        "operationId": "getSharedDiffFile",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "getSharedDiffFile",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/DiffFile"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "name": "fileId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/session-shares/{id}/commands": {
+      "post": {
+        "operationId": "sharedCommand",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "sharedCommand",
+        "description": "Grant, actor, deadline, owner access, request/session/turn scope and effective capability checked before admission. Original owner operation and durable actor mapping are inserted in the same transaction. Retries return the original receipt, never re-execute.",
+        "responses": {
+          "202": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/SharedCommand"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/session-shares/{id}/operations/{operationId}": {
+      "get": {
+        "operationId": "getSharedOperation",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "getSharedOperation",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "name": "operationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/sessions/{id}/share-activity": {
+      "get": {
+        "operationId": "getShareActivity",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "getShareActivity",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ShareActivity"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/PageToken"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ]
+      }
+    },
+    "/v1/session-shares/{id}/requests/{requestId}": {
+      "get": {
+        "operationId": "getSharedRequest",
+        "tags": [
+          "sharing"
+        ],
+        "summary": "getSharedRequest",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "Authorized session-scoped response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/InteractionRequest"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          },
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "./protocol.schema.json#/$defs/Id"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/me/profile": {
+      "get": {
+        "operationId": "getUserProfile",
+        "tags": [
+          "profile"
+        ],
+        "summary": "Read own profile",
+        "responses": {
+          "200": {
+            "description": "Own profile; avatar is private canonical JPEG base64",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/UserProfile"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateUserProfile",
+        "tags": [
+          "profile"
+        ],
+        "summary": "Update own profile with optimistic revision; avatar omitted preserves, null removes",
+        "responses": {
+          "200": {
+            "description": "Own profile; avatar is private canonical JPEG base64",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/UserProfile"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/UpdateUserProfile"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/history/native": {
+      "post": {
+        "operationId": "projectHistory",
+        "tags": [
+          "commands"
+        ],
+        "summary": "Read project history without creating sessions",
+        "responses": {
+          "202": {
+            "description": "Operation receipt: confirmed means native acceptance, NOT turn completion.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/Operation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Typed error. Retry only as documented; timeout does not mean native command failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./protocol.schema.json#/$defs/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./protocol.schema.json#/$defs/ProjectHistory"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "UserBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Opaque user token from wx.login exchange; never put in URL."
+      },
+      "NodeBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Short-lived token obtained by Ed25519 proof, only valid for Node control WSS."
+      },
+      "EnrollmentPoll": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "One-enrollment polling secret; cannot access client resources."
+      }
+    },
+    "parameters": {
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "Client operation ID, 16–128 ASCII letters/digits/_/-. Scoped to user; same key and same canonical request return original receipt, changed body is 409.",
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{16,128}$"
+        }
+      },
+      "PageToken": {
+        "name": "pageToken",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "description": "Opaque signed owner/filter-bound keyset cursor; not an event cursor."
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 50
+        }
+      }
+    }
+  },
+  "x-websockets": [
+    {
+      "path": "/v1/ws/client",
+      "security": [
+        {
+          "UserBearer": []
+        }
+      ],
+      "incoming": {
+        "$ref": "./protocol.schema.json#/$defs/ClientFrame"
+      },
+      "outgoing": {
+        "$ref": "./protocol.schema.json#/$defs/ServerFrame"
+      },
+      "description": "One app-level socket. watch acknowledgement pins metadata/session barriers; then HTTP catch-up and drain buffered live frames."
+    },
+    {
+      "path": "/v1/ws/node",
+      "security": [
+        {
+          "NodeBearer": []
+        }
+      ],
+      "incoming": {
+        "$ref": "./protocol.schema.json#/$defs/NodeToGatewayFrame"
+      },
+      "outgoing": {
+        "$ref": "./protocol.schema.json#/$defs/GatewayToNodeFrame"
+      },
+      "description": "One outbound Node socket; new epoch fences old connection. Only committed source events are acknowledged."
+    }
+  ]
+}

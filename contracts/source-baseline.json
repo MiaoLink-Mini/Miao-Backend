@@ -1,0 +1,181 @@
+{
+  "capturedAt": "2026-09-06",
+  "frontendRootDefault": "../WeAgent-Frontend",
+  "priority": [
+    "frontend implementation",
+    "frontend design and inventory",
+    "auxiliary backend-design.md"
+  ],
+  "pages": [
+    "pages/login/index",
+    "pages/home/index",
+    "pages/sessions/index",
+    "pages/inbox/index",
+    "pages/me/index",
+    "pages/nodes/index",
+    "pages/node/index",
+    "pages/projects/index",
+    "pages/project/index",
+    "pages/pair/index",
+    "pages/create/index",
+    "pages/session/index",
+    "pages/request/index",
+    "pages/agent/index",
+    "pages/panel/index",
+    "pages/file/index",
+    "pages/capabilities/index",
+    "pages/requirement/index",
+    "pages/settings/index",
+    "pages/diagnostics/index"
+  ],
+  "requirementCount": 194,
+  "frontendDemoCount": 98,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "15821e8523eaac775ff4b0e03311ace294e1983cf43df01e0491f3b6260b7dcb"
+    },
+    {
+      "path": "docs/integration.md",
+      "sha256": "6f55535e4fa06a56d95ec6c52ba00e93b1fd5e842cab02dd78efbf406a80ba12"
+    },
+    {
+      "path": "docs/coverage.md",
+      "sha256": "93fb2adebffac826b1c83a0a826d202638bfa26bba4cacaf266c568e955798cc"
+    },
+    {
+      "path": "miniprogram/app.json",
+      "sha256": "0f395456b1ad5c94b63028585c808e287e010510408f587d0c389acfc4990b77"
+    },
+    {
+      "path": "miniprogram/config.js",
+      "sha256": "c4bbcee3bf6d520a324e58efb0c2b5c268fd7957568b86803d0970f725e5ad5a"
+    },
+    {
+      "path": "miniprogram/services/runtime.js",
+      "sha256": "cbeaf52deb435db119ed5bbed99b6a7160de061dd5c0868842f4293076509c9b"
+    },
+    {
+      "path": "miniprogram/services/fake-gateway.js",
+      "sha256": "c0d3151d527d02f8a46213e385e5a4e3b27baf59c04d4f24493f0e99c038b5ce"
+    },
+    {
+      "path": "miniprogram/services/live-gateway.js",
+      "sha256": "fee1a984c8a584ee1964266d648797a968a0eaf5429f16894cced524ddf76236"
+    },
+    {
+      "path": "miniprogram/stores/timeline.js",
+      "sha256": "902632082533e47f8fc3549f58da77ff31eb71aebc4d2e672dea655076abbc12"
+    },
+    {
+      "path": "miniprogram/utils/policy.js",
+      "sha256": "da668cd1f6352f8434a80cb0f7d81edab131758ecffe51781af80504676859e8"
+    },
+    {
+      "path": "miniprogram/utils/page.js",
+      "sha256": "6decc04e452263a9fdcff920d5bbe55ca11d817b77f47e1e93793de852d8f644"
+    },
+    {
+      "path": "miniprogram/utils/slash-commands.js",
+      "sha256": "40fe3ba7726c3862d1460542cd7acd86cd67aea6cf622ac5ac427264a695ec26"
+    },
+    {
+      "path": "miniprogram/catalog/requirements.js",
+      "sha256": "40b6b6ba621e4fa7c33995d48240f732f3aa32b24014577d1bd34d2a84e2465d"
+    },
+    {
+      "path": "miniprogram/pages/login/index.js",
+      "sha256": "59719bbf9457681885489e8138e33dfe60514d8fcf4d470e8a23e8c3b85a4ccb"
+    },
+    {
+      "path": "miniprogram/pages/home/index.js",
+      "sha256": "3b140c445f1234e4da2adfd8baac9b90d46c5b33a3744ea96f1a47a07df9da97"
+    },
+    {
+      "path": "miniprogram/pages/sessions/index.js",
+      "sha256": "521de731d04269190ff2cf7a9fb53e8dc710265bcfed9e79c1311e360348974c"
+    },
+    {
+      "path": "miniprogram/pages/inbox/index.js",
+      "sha256": "2b6de8fee27d59fbd2778ccab6ea36e9af9e6c9fcaf0c3db2411dc790f2a9b9f"
+    },
+    {
+      "path": "miniprogram/pages/me/index.js",
+      "sha256": "c5b20b9c870adf6b5e6a61b2e262ca2f814ee82b84ca548db2d9ba0f29743b53"
+    },
+    {
+      "path": "miniprogram/pages/nodes/index.js",
+      "sha256": "c51c5627cdf73ec0933f49009b4f360fbbeff63bc2d9902fd6d0f5b9114e374b"
+    },
+    {
+      "path": "miniprogram/pages/node/index.js",
+      "sha256": "9061ddd59069a657770f3f49ad763478d470824962a2f53994f2e3106617d6bf"
+    },
+    {
+      "path": "miniprogram/pages/projects/index.js",
+      "sha256": "6ac9bc87f5a34d5077b8dce0d95eb1b01711758925d13024a30f6c8a6ab9cee7"
+    },
+    {
+      "path": "miniprogram/pages/project/index.js",
+      "sha256": "9e4fccae44d333df3bdf5c6b26171ccfed45b4e25cef72292fc83fa3d957b787"
+    },
+    {
+      "path": "miniprogram/pages/pair/index.js",
+      "sha256": "3152acde00d082b4ebeff0568ade46e8fdb09f8f437c70ea8ebdd245e9a66bda"
+    },
+    {
+      "path": "miniprogram/pages/create/index.js",
+      "sha256": "aa05b4eef6f3478c4c3d88542bc13a23513ffb46d8c7760477b1369d53429a8b"
+    },
+    {
+      "path": "miniprogram/pages/session/index.js",
+      "sha256": "79b996d2bbc30bb7d3dcb7b482e6964e7df3c7e22993f3f5fd663e1a79b749b4"
+    },
+    {
+      "path": "miniprogram/pages/request/index.js",
+      "sha256": "148f7fa52424a1f519609bde42aa651d8b806be9442443859b2c457e8825c6d0"
+    },
+    {
+      "path": "miniprogram/pages/agent/index.js",
+      "sha256": "b26a5a4f7c50b2a92093c15c12042f4002d4144208c734243dcb34dafd5fd1cf"
+    },
+    {
+      "path": "miniprogram/pages/panel/index.js",
+      "sha256": "6329347cfb2b1b01afccde67d7f961e704be84f78c37c70ff2c81b7467ff4cc3"
+    },
+    {
+      "path": "miniprogram/pages/file/index.js",
+      "sha256": "25c0f44be7451c037aa7a4f7c963ba4d2e5154e873865e4874656fa132cd650b"
+    },
+    {
+      "path": "miniprogram/pages/capabilities/index.js",
+      "sha256": "ba6e340290756f6ed98fc4413c8e25d845e47afafcc2d7eb40480eeb9793574a"
+    },
+    {
+      "path": "miniprogram/pages/requirement/index.js",
+      "sha256": "69c43b2e508481fbace85bd02e54f5e820f0dca5c0552865882da5f87c41a73d"
+    },
+    {
+      "path": "miniprogram/pages/settings/index.js",
+      "sha256": "c31ab485589a8ddbb8b163dfa91a1a448fa7ffa0fe340d943ca00abf6f11d749"
+    },
+    {
+      "path": "miniprogram/pages/diagnostics/index.js",
+      "sha256": "dcebc23d39dff93d10163c492263f1b37f24a2d19d102dc99cd9045db3bf8add"
+    }
+  ],
+  "references": [
+    {
+      "path": "backend-design.md",
+      "sha256": "10eadf35d1b406dbf5eb5b8a30ee0cffb8f05dad0c8c4140d4b0dc8b4b997e51"
+    },
+    {
+      "path": "frontend-design.md",
+      "sha256": "504d22419517687951c1a9138a28a72208d3b645f8e10fa4c0017d7de5be362b"
+    },
+    {
+      "path": "frontend-function-inventory.md",
+      "sha256": "8666eff4de44c011dd093d45781a8a77df9826aab80d9c4e071bd1aad9d8d7a9"
+    }
+  ]
+}

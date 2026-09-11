@@ -1,0 +1,9 @@
+# Binaries must be cross-built with the reviewed, patched Go toolchain.
+FROM scratch
+COPY ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY gateway /gateway
+COPY migrate /migrate
+USER 65532:65532
+ENV LISTEN_ADDR=0.0.0.0:8080
+EXPOSE 8080
+ENTRYPOINT ["/gateway"]

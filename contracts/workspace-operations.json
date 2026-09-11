@@ -1,0 +1,499 @@
+[
+  {
+    "kind": "overview",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "project",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": true
+  },
+  {
+    "kind": "files",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": true
+  },
+  {
+    "kind": "artifacts",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "attachments",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "account",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "config",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "thinking",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "permissions",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "sources",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "output_styles",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "agents",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "skills",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "commands",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "extensions",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "mcp",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "tasks",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "checkpoints",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "retry",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "queue",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "history",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": true
+  },
+  {
+    "kind": "diagnostics",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": true
+  },
+  {
+    "kind": "goal",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "widgets",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "list_files",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": true
+  },
+  {
+    "kind": "read_file",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": true
+  },
+  {
+    "kind": "file_status",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": true
+  },
+  {
+    "kind": "mcp_tools",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "task",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "history_messages",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": true
+  },
+  {
+    "kind": "external",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "begin_upload",
+    "idle": false,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "upload_chunk",
+    "idle": false,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "commit_upload",
+    "idle": false,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "discard_upload",
+    "idle": false,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_thinking",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_mode",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_permission",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_output_style",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_queue_policy",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_config",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "reset_config",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_skill",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_mcp",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "reload_extensions",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "reload_skills",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "authorize_mcp",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "reconnect_mcp",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "add_mcp",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "remove_mcp",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "install_plugin",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "uninstall_plugin",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "steer",
+    "idle": false,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_auto_compaction",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_auto_retry",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "abort_retry",
+    "idle": false,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "stop_task",
+    "idle": false,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "close",
+    "idle": false,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "restore_preview",
+    "idle": true,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "restore_apply",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "native_rename",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "native_archive",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "native_delete",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "start_auth",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "cancel_auth",
+    "idle": false,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "set_goal",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "clear_goal",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "review",
+    "idle": true,
+    "write": true,
+    "newTurn": true,
+    "closed": false
+  },
+  {
+    "kind": "review_targets",
+    "idle": false,
+    "write": false,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "native_queue_policy",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": false
+  },
+  {
+    "kind": "resume",
+    "idle": true,
+    "write": true,
+    "newTurn": false,
+    "closed": true
+  }
+]

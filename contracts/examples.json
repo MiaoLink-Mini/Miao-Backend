@@ -1,0 +1,1634 @@
+{
+  "description": "Synthetic protocol fixtures, no real tokens, users or device keys.",
+  "cases": [
+    {
+      "name": "node-online",
+      "schema": "Node",
+      "valid": true,
+      "value": {
+        "id": "node_1",
+        "name": "MacBook Pro",
+        "platform": "macos",
+        "version": "0.1.0",
+        "online": true,
+        "lastSeen": "2026-09-06T02:00:00Z",
+        "revoked": false,
+        "revision": 1
+      }
+    },
+    {
+      "name": "project",
+      "schema": "Project",
+      "valid": true,
+      "value": {
+        "id": "project_1",
+        "nodeId": "node_1",
+        "name": "WeAgent Frontend",
+        "description": "Local workspace metadata",
+        "branch": "main",
+        "valid": true,
+        "revision": 1
+      }
+    },
+    {
+      "name": "agent-capabilities",
+      "schema": "Agent",
+      "valid": true,
+      "value": {
+        "id": "agent_1",
+        "nodeId": "node_1",
+        "name": "Claude Code",
+        "state": "ready",
+        "version": null,
+        "adapterVersion": "0.1.0",
+        "capabilities": {
+          "send": true,
+          "cancel": true,
+          "approval": true,
+          "question": true,
+          "diff": true,
+          "plan": true,
+          "usage": true,
+          "queue": true,
+          "steer": false
+        },
+        "capabilityRevision": 1,
+        "revision": 1
+      }
+    },
+    {
+      "name": "session-waiting-input",
+      "schema": "Session",
+      "valid": true,
+      "value": {
+        "id": "session_1",
+        "nodeId": "node_1",
+        "projectId": "project_1",
+        "agentId": "agent_1",
+        "title": "检查网关事件去重逻辑",
+        "state": "waiting_input",
+        "turnId": "turn_1",
+        "mode": "managed",
+        "capabilities": {
+          "send": true,
+          "cancel": true,
+          "approval": true,
+          "question": true,
+          "diff": true,
+          "plan": true,
+          "usage": true,
+          "queue": true,
+          "steer": false
+        },
+        "capabilityRevision": 1,
+        "queue": [],
+        "createdAt": "2026-09-06T02:00:00Z",
+        "updatedAt": "2026-09-06T02:00:00Z",
+        "revision": 1,
+        "lastSequence": 1,
+        "historyState": "available"
+      }
+    },
+    {
+      "name": "question-single-screen",
+      "schema": "InteractionRequest",
+      "valid": true,
+      "value": {
+        "id": "request_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "kind": "question",
+        "title": "断线后希望保留哪些内容？",
+        "summary": "请确认本次交互方案。回答只用于当前问题。",
+        "state": "pending",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "expiresAt": "2026-09-06T02:05:00Z",
+        "revision": 1,
+        "decision": null,
+        "decisionOperationId": null,
+        "questions": [
+          {
+            "id": "q1",
+            "label": "选择恢复策略",
+            "required": true,
+            "type": "single",
+            "options": [
+              {
+                "id": "keep_history",
+                "label": "保留已加载历史与输入草稿"
+              },
+              {
+                "id": "keep_draft",
+                "label": "只保留输入草稿"
+              }
+            ]
+          },
+          {
+            "id": "q2",
+            "label": "补充说明（选填）",
+            "required": false,
+            "type": "text",
+            "maxLength": 4000
+          }
+        ]
+      }
+    },
+    {
+      "name": "approval-choices",
+      "schema": "InteractionRequest",
+      "valid": true,
+      "value": {
+        "id": "approval_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "kind": "approval",
+        "title": "允许读取项目文件？",
+        "summary": "请确认本次交互方案。回答只用于当前问题。",
+        "state": "pending",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "expiresAt": "2026-09-06T02:05:00Z",
+        "revision": 1,
+        "decision": null,
+        "decisionOperationId": null,
+        "action": "read project files",
+        "scope": "Approved project only",
+        "choices": [
+          {
+            "id": "allow_once",
+            "label": "允许一次"
+          },
+          {
+            "id": "deny",
+            "label": "拒绝"
+          }
+        ]
+      }
+    },
+    {
+      "name": "question-response",
+      "schema": "RespondRequest",
+      "valid": true,
+      "value": {
+        "expectedTurnId": "turn_1",
+        "requestRevision": 1,
+        "capabilityRevision": 1,
+        "decision": {
+          "kind": "question",
+          "answers": {
+            "q1": "keep_history",
+            "q2": "保留草稿即可继续"
+          }
+        }
+      }
+    },
+    {
+      "name": "approval-response",
+      "schema": "RespondRequest",
+      "valid": true,
+      "value": {
+        "expectedTurnId": "turn_1",
+        "requestRevision": 1,
+        "capabilityRevision": 1,
+        "decision": {
+          "kind": "approval",
+          "choiceId": "allow_once"
+        }
+      }
+    },
+    {
+      "name": "multiple-question",
+      "schema": "Question",
+      "valid": true,
+      "value": {
+        "id": "q_multi",
+        "label": "选择项目",
+        "required": true,
+        "type": "multiple",
+        "options": [
+          {
+            "id": "one",
+            "label": "一"
+          },
+          {
+            "id": "two",
+            "label": "二"
+          }
+        ],
+        "max": 2
+      }
+    },
+    {
+      "name": "multiple-answer",
+      "schema": "Decision",
+      "valid": true,
+      "value": {
+        "kind": "question",
+        "answers": {
+          "q_multi": [
+            "one",
+            "two"
+          ]
+        }
+      }
+    },
+    {
+      "name": "create-session",
+      "schema": "CreateSession",
+      "valid": true,
+      "value": {
+        "nodeId": "node_1",
+        "projectId": "project_1",
+        "agentId": "agent_1",
+        "prompt": "检查网关事件去重逻辑",
+        "capabilityRevision": 1
+      }
+    },
+    {
+      "name": "send-current-session",
+      "schema": "SendMessage",
+      "valid": true,
+      "value": {
+        "expectedTurnId": "turn_1",
+        "text": "继续检查",
+        "mode": "send",
+        "capabilityRevision": 1
+      }
+    },
+    {
+      "name": "queue-explicitly",
+      "schema": "SendMessage",
+      "valid": true,
+      "value": {
+        "expectedTurnId": "turn_1",
+        "text": "本轮完成后运行测试",
+        "mode": "queue",
+        "capabilityRevision": 1
+      }
+    },
+    {
+      "name": "cancel-exact-turn",
+      "schema": "CancelTurn",
+      "valid": true,
+      "value": {
+        "expectedTurnId": "turn_1",
+        "capabilityRevision": 1
+      }
+    },
+    {
+      "name": "accepted-not-completed",
+      "schema": "Operation",
+      "valid": true,
+      "value": {
+        "id": "operation_00000001",
+        "kind": "respond",
+        "state": "accepted",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "updatedAt": "2026-09-06T02:00:00Z",
+        "deadlineAt": "2026-09-06T02:05:00Z",
+        "result": null,
+        "error": null,
+        "revision": 1
+      }
+    },
+    {
+      "name": "unknown-server-reconciling",
+      "schema": "Operation",
+      "valid": true,
+      "value": {
+        "id": "operation_00000001",
+        "kind": "respond",
+        "state": "reconciling",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "updatedAt": "2026-09-06T02:00:00Z",
+        "deadlineAt": "2026-09-06T02:05:00Z",
+        "result": null,
+        "error": null,
+        "revision": 1
+      }
+    },
+    {
+      "name": "message-final",
+      "schema": "SessionEvent",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "id": "event_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "sequence": 1,
+        "createdAt": "2026-09-06T02:00:00Z",
+        "type": "message.completed",
+        "data": {
+          "itemId": "message_1",
+          "role": "assistant",
+          "text": "已检查 3 个相关文件。",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "name": "delta-durable",
+      "schema": "SessionEvent",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "id": "event_2",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "sequence": 2,
+        "createdAt": "2026-09-06T02:00:00Z",
+        "type": "message.delta",
+        "data": {
+          "itemId": "message_2",
+          "role": "assistant",
+          "text": "正在检查"
+        }
+      }
+    },
+    {
+      "name": "metadata-consumes-sequence",
+      "schema": "SessionEvent",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "id": "event_3",
+        "sessionId": "session_1",
+        "turnId": null,
+        "sequence": 3,
+        "createdAt": "2026-09-06T02:00:00Z",
+        "type": "session.state",
+        "data": {
+          "state": "completed",
+          "turnId": "turn_1",
+          "revision": 2
+        }
+      }
+    },
+    {
+      "name": "request-event",
+      "schema": "SessionEvent",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "id": "event_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "sequence": 1,
+        "createdAt": "2026-09-06T02:00:00Z",
+        "type": "request.upsert",
+        "data": {
+          "id": "request_1",
+          "sessionId": "session_1",
+          "turnId": "turn_1",
+          "kind": "question",
+          "title": "断线后希望保留哪些内容？",
+          "summary": "请确认本次交互方案。回答只用于当前问题。",
+          "state": "pending",
+          "createdAt": "2026-09-06T02:00:00Z",
+          "expiresAt": "2026-09-06T02:05:00Z",
+          "revision": 1,
+          "decision": null,
+          "decisionOperationId": null,
+          "questions": [
+            {
+              "id": "q1",
+              "label": "选择恢复策略",
+              "required": true,
+              "type": "single",
+              "options": [
+                {
+                  "id": "keep_history",
+                  "label": "保留已加载历史与输入草稿"
+                },
+                {
+                  "id": "keep_draft",
+                  "label": "只保留输入草稿"
+                }
+              ]
+            },
+            {
+              "id": "q2",
+              "label": "补充说明（选填）",
+              "required": false,
+              "type": "text",
+              "maxLength": 4000
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "event-page",
+      "schema": "EventsPage",
+      "valid": true,
+      "value": {
+        "sessionId": "session_1",
+        "after": 0,
+        "highWater": 1,
+        "events": [
+          {
+            "version": "weagent/1",
+            "id": "event_1",
+            "sessionId": "session_1",
+            "turnId": "turn_1",
+            "sequence": 1,
+            "createdAt": "2026-09-06T02:00:00Z",
+            "type": "message.completed",
+            "data": {
+              "itemId": "message_1",
+              "role": "assistant",
+              "text": "已检查 3 个相关文件。",
+              "truncated": false
+            }
+          }
+        ],
+        "nextAfter": 1,
+        "hasMore": false,
+        "earliestSequence": 1
+      }
+    },
+    {
+      "name": "checkpoint",
+      "schema": "Checkpoint",
+      "valid": true,
+      "value": {
+        "id": "checkpoint_1",
+        "sessionId": "session_1",
+        "sequence": 1,
+        "createdAt": "2026-09-06T02:00:00Z",
+        "itemCount": 1,
+        "expiresAt": "2026-09-06T02:05:00Z"
+      }
+    },
+    {
+      "name": "checkpoint-page",
+      "schema": "CheckpointItemsPage",
+      "valid": true,
+      "value": {
+        "checkpointId": "checkpoint_1",
+        "sequence": 1,
+        "items": [
+          {
+            "type": "message",
+            "itemId": "message_1",
+            "turnId": "turn_1",
+            "role": "assistant",
+            "text": "已检查 3 个相关文件。",
+            "complete": true,
+            "truncated": false
+          }
+        ],
+        "nextPageToken": null
+      }
+    },
+    {
+      "name": "tool-output-truncated",
+      "schema": "TimelineItem",
+      "valid": true,
+      "value": {
+        "type": "tool",
+        "itemId": "tool_1",
+        "turnId": "turn_1",
+        "title": "读取文件",
+        "state": "completed",
+        "summary": "3 files",
+        "output": "output",
+        "truncated": true
+      }
+    },
+    {
+      "name": "unknown-cost-is-null",
+      "schema": "TimelineItem",
+      "valid": true,
+      "value": {
+        "type": "usage",
+        "itemId": "usage_1",
+        "turnId": "turn_1",
+        "inputTokens": 123,
+        "outputTokens": 40,
+        "cost": null
+      }
+    },
+    {
+      "name": "cost-decimal-no-float",
+      "schema": "TimelineItem",
+      "valid": true,
+      "value": {
+        "type": "usage",
+        "itemId": "usage_1",
+        "turnId": "turn_1",
+        "inputTokens": null,
+        "outputTokens": null,
+        "cost": {
+          "amount": "0.0034",
+          "currency": "USD"
+        }
+      }
+    },
+    {
+      "name": "diff-snapshot",
+      "schema": "DiffFile",
+      "valid": true,
+      "value": {
+        "id": "file_1",
+        "sessionId": "session_1",
+        "itemId": "diff_1",
+        "path": "src/gateway.go",
+        "language": "go",
+        "patch": "@@ -1 +1 @@\n-old\n+new",
+        "truncated": false,
+        "createdAt": "2026-09-06T02:00:00Z"
+      }
+    },
+    {
+      "name": "watch-barrier",
+      "schema": "ClientFrame",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "type": "watch",
+        "data": {
+          "revision": 0,
+          "sessions": [
+            {
+              "sessionId": "session_1",
+              "after": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "watch-ready",
+      "schema": "ServerFrame",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "type": "ready",
+        "data": {
+          "revision": 4,
+          "sessions": [
+            {
+              "sessionId": "session_1",
+              "highWater": 1
+            }
+          ],
+          "heartbeatSeconds": 15
+        }
+      }
+    },
+    {
+      "name": "ws-event",
+      "schema": "ServerFrame",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "type": "event",
+        "data": {
+          "version": "weagent/1",
+          "id": "event_1",
+          "sessionId": "session_1",
+          "turnId": "turn_1",
+          "sequence": 1,
+          "createdAt": "2026-09-06T02:00:00Z",
+          "type": "message.completed",
+          "data": {
+            "itemId": "message_1",
+            "role": "assistant",
+            "text": "已检查 3 个相关文件。",
+            "truncated": false
+          }
+        }
+      }
+    },
+    {
+      "name": "node-command",
+      "schema": "GatewayToNodeFrame",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "type": "command",
+        "data": {
+          "operationId": "operation_00000001",
+          "nodeEpoch": 1,
+          "deadlineAt": "2026-09-06T02:05:00Z",
+          "kind": "create",
+          "sessionId": "session_1",
+          "turnId": "turn_1",
+          "payload": {
+            "nodeId": "node_1",
+            "projectId": "project_1",
+            "agentId": "agent_1",
+            "prompt": "检查网关事件去重逻辑",
+            "capabilityRevision": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "node-journal-ack",
+      "schema": "NodeToGatewayFrame",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "type": "command.ack",
+        "data": {
+          "epoch": 1,
+          "operationId": "operation_00000001",
+          "state": "delivered",
+          "result": null,
+          "error": null
+        }
+      }
+    },
+    {
+      "name": "node-event-spool",
+      "schema": "NodeToGatewayFrame",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "type": "node.events",
+        "data": {
+          "epoch": 1,
+          "events": [
+            {
+              "sourceEventId": "source_1",
+              "sourceSequence": 1,
+              "sessionId": "session_1",
+              "turnId": "turn_1",
+              "type": "message.completed",
+              "data": {
+                "itemId": "message_1",
+                "role": "assistant",
+                "text": "已检查 3 个相关文件。",
+                "truncated": false
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "node-question",
+      "schema": "NodeToGatewayFrame",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "type": "node.request",
+        "data": {
+          "epoch": 1,
+          "sourceEventId": "source_req_1",
+          "sourceSequence": 2,
+          "request": {
+            "id": "request_1",
+            "sessionId": "session_1",
+            "turnId": "turn_1",
+            "kind": "question",
+            "title": "断线后希望保留哪些内容？",
+            "summary": "请确认本次交互方案。回答只用于当前问题。",
+            "createdAt": "2026-09-06T02:00:00Z",
+            "expiresAt": "2026-09-06T02:05:00Z",
+            "questions": [
+              {
+                "id": "q1",
+                "label": "选择恢复策略",
+                "required": true,
+                "type": "single",
+                "options": [
+                  {
+                    "id": "keep_history",
+                    "label": "保留已加载历史与输入草稿"
+                  },
+                  {
+                    "id": "keep_draft",
+                    "label": "只保留输入草稿"
+                  }
+                ]
+              },
+              {
+                "id": "q2",
+                "label": "补充说明（选填）",
+                "required": false,
+                "type": "text",
+                "maxLength": 4000
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "node-fenced-ready",
+      "schema": "GatewayToNodeFrame",
+      "valid": true,
+      "value": {
+        "version": "weagent/1",
+        "type": "node.ready",
+        "data": {
+          "nodeId": "node_1",
+          "epoch": 2,
+          "heartbeatSeconds": 15,
+          "serverTime": "2026-09-06T02:00:00Z"
+        }
+      }
+    },
+    {
+      "name": "pair-code",
+      "schema": "PairPreviewInput",
+      "valid": true,
+      "value": {
+        "code": "ABCD2345EFGH"
+      }
+    },
+    {
+      "name": "pair-ticket",
+      "schema": "PairPreview",
+      "valid": true,
+      "value": {
+        "ticketId": "ticket_1",
+        "nodeName": "MacBook Pro",
+        "platform": "macos",
+        "keyFingerprint": "SHA256:example-not-a-real-device",
+        "expiresAt": "2026-09-06T02:05:00Z"
+      }
+    },
+    {
+      "name": "enrollment-key",
+      "schema": "EnrollmentInput",
+      "valid": true,
+      "value": {
+        "publicKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "name": "MacBook Pro",
+        "platform": "macos",
+        "version": "0.1.0"
+      }
+    },
+    {
+      "name": "typed-error",
+      "schema": "ErrorResponse",
+      "valid": true,
+      "value": {
+        "error": {
+          "code": "CURSOR_EXPIRED",
+          "message": "请加载历史基线",
+          "retryable": false,
+          "requestId": "trace_1"
+        }
+      }
+    },
+    {
+      "name": "purged-history-error",
+      "schema": "ErrorResponse",
+      "valid": true,
+      "value": {
+        "error": {
+          "code": "HISTORY_PURGED",
+          "message": "正文已超过保留期",
+          "retryable": false,
+          "requestId": "trace_2"
+        }
+      }
+    },
+    {
+      "name": "bootstrap",
+      "schema": "Bootstrap",
+      "valid": true,
+      "value": {
+        "user": {
+          "id": "user_1",
+          "displayName": "示例用户",
+          "createdAt": "2026-09-06T02:00:00Z"
+        },
+        "revision": 1,
+        "serverTime": "2026-09-06T02:00:00Z",
+        "counts": {
+          "onlineNodes": 1,
+          "sessions": 1,
+          "pendingRequests": 1,
+          "unreadNotifications": 0
+        },
+        "nodes": {
+          "items": [
+            {
+              "id": "node_1",
+              "name": "MacBook Pro",
+              "platform": "macos",
+              "version": "0.1.0",
+              "online": true,
+              "lastSeen": "2026-09-06T02:00:00Z",
+              "revoked": false,
+              "revision": 1
+            }
+          ],
+          "nextPageToken": null
+        },
+        "projects": {
+          "items": [
+            {
+              "id": "project_1",
+              "nodeId": "node_1",
+              "name": "WeAgent Frontend",
+              "description": "Local workspace metadata",
+              "branch": "main",
+              "valid": true,
+              "revision": 1
+            }
+          ],
+          "nextPageToken": null
+        },
+        "agents": {
+          "items": [
+            {
+              "id": "agent_1",
+              "nodeId": "node_1",
+              "name": "Claude Code",
+              "state": "ready",
+              "version": null,
+              "adapterVersion": "0.1.0",
+              "capabilities": {
+                "send": true,
+                "cancel": true,
+                "approval": true,
+                "question": true,
+                "diff": true,
+                "plan": true,
+                "usage": true,
+                "queue": true,
+                "steer": false
+              },
+              "capabilityRevision": 1,
+              "revision": 1
+            }
+          ],
+          "nextPageToken": null
+        },
+        "sessions": {
+          "items": [
+            {
+              "id": "session_1",
+              "nodeId": "node_1",
+              "projectId": "project_1",
+              "agentId": "agent_1",
+              "title": "检查网关事件去重逻辑",
+              "state": "waiting_input",
+              "turnId": "turn_1",
+              "mode": "managed",
+              "capabilities": {
+                "send": true,
+                "cancel": true,
+                "approval": true,
+                "question": true,
+                "diff": true,
+                "plan": true,
+                "usage": true,
+                "queue": true,
+                "steer": false
+              },
+              "capabilityRevision": 1,
+              "queue": [],
+              "createdAt": "2026-09-06T02:00:00Z",
+              "updatedAt": "2026-09-06T02:00:00Z",
+              "revision": 1,
+              "lastSequence": 1,
+              "historyState": "available"
+            }
+          ],
+          "nextPageToken": null
+        },
+        "requests": {
+          "items": [
+            {
+              "id": "request_1",
+              "sessionId": "session_1",
+              "turnId": "turn_1",
+              "kind": "question",
+              "title": "断线后希望保留哪些内容？",
+              "summary": "请确认本次交互方案。回答只用于当前问题。",
+              "state": "pending",
+              "createdAt": "2026-09-06T02:00:00Z",
+              "expiresAt": "2026-09-06T02:05:00Z",
+              "revision": 1,
+              "decision": null,
+              "decisionOperationId": null,
+              "questions": [
+                {
+                  "id": "q1",
+                  "label": "选择恢复策略",
+                  "required": true,
+                  "type": "single",
+                  "options": [
+                    {
+                      "id": "keep_history",
+                      "label": "保留已加载历史与输入草稿"
+                    },
+                    {
+                      "id": "keep_draft",
+                      "label": "只保留输入草稿"
+                    }
+                  ]
+                },
+                {
+                  "id": "q2",
+                  "label": "补充说明（选填）",
+                  "required": false,
+                  "type": "text",
+                  "maxLength": 4000
+                }
+              ]
+            }
+          ],
+          "nextPageToken": null
+        },
+        "notifications": {
+          "items": [],
+          "nextPageToken": null
+        },
+        "audit": {
+          "items": [],
+          "nextPageToken": null
+        }
+      }
+    },
+    {
+      "name": "reject-empty-message",
+      "schema": "SendMessage",
+      "valid": false,
+      "value": {
+        "expectedTurnId": "turn_1",
+        "text": "",
+        "mode": "send",
+        "capabilityRevision": 1
+      }
+    },
+    {
+      "name": "reject-whitespace-prompt",
+      "schema": "CreateSession",
+      "valid": false,
+      "value": {
+        "nodeId": "node_1",
+        "projectId": "project_1",
+        "agentId": "agent_1",
+        "prompt": " \n\t",
+        "capabilityRevision": 1
+      }
+    },
+    {
+      "name": "reject-shell-backdoor",
+      "schema": "CreateSession",
+      "valid": false,
+      "value": {
+        "nodeId": "node_1",
+        "projectId": "project_1",
+        "agentId": "agent_1",
+        "prompt": "检查网关事件去重逻辑",
+        "capabilityRevision": 1,
+        "shell": "sh"
+      }
+    },
+    {
+      "name": "reject-client-owner",
+      "schema": "CreateSession",
+      "valid": false,
+      "value": {
+        "nodeId": "node_1",
+        "projectId": "project_1",
+        "agentId": "agent_1",
+        "prompt": "检查网关事件去重逻辑",
+        "capabilityRevision": 1,
+        "userId": "victim"
+      }
+    },
+    {
+      "name": "reject-demo-version",
+      "schema": "SessionEvent",
+      "valid": false,
+      "value": {
+        "version": "demo-view/1",
+        "id": "event_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "sequence": 1,
+        "createdAt": "2026-09-06T02:00:00Z",
+        "type": "message.completed",
+        "data": {
+          "itemId": "message_1",
+          "role": "assistant",
+          "text": "已检查 3 个相关文件。",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "name": "reject-unsafe-sequence",
+      "schema": "SessionEvent",
+      "valid": false,
+      "value": {
+        "version": "weagent/1",
+        "id": "event_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "sequence": 9007199254740992,
+        "createdAt": "2026-09-06T02:00:00Z",
+        "type": "message.completed",
+        "data": {
+          "itemId": "message_1",
+          "role": "assistant",
+          "text": "已检查 3 个相关文件。",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "name": "reject-zero-event",
+      "schema": "SessionEvent",
+      "valid": false,
+      "value": {
+        "version": "weagent/1",
+        "id": "event_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "sequence": 0,
+        "createdAt": "2026-09-06T02:00:00Z",
+        "type": "message.completed",
+        "data": {
+          "itemId": "message_1",
+          "role": "assistant",
+          "text": "已检查 3 个相关文件。",
+          "truncated": false
+        }
+      }
+    },
+    {
+      "name": "reject-missing-turn-precondition",
+      "schema": "CancelTurn",
+      "valid": false,
+      "value": {
+        "capabilityRevision": 1
+      }
+    },
+    {
+      "name": "reject-native-steer-in-v1",
+      "schema": "SendMessage",
+      "valid": false,
+      "value": {
+        "expectedTurnId": "turn_1",
+        "text": "interrupt",
+        "mode": "steer",
+        "capabilityRevision": 1
+      }
+    },
+    {
+      "name": "reject-arbitrary-control",
+      "schema": "ClientFrame",
+      "valid": false,
+      "value": {
+        "version": "weagent/1",
+        "type": "shell.exec",
+        "data": {
+          "command": "anything"
+        }
+      }
+    },
+    {
+      "name": "reject-old-protocol",
+      "schema": "ClientFrame",
+      "valid": false,
+      "value": {
+        "version": "weagent/0",
+        "type": "heartbeat",
+        "data": {
+          "nonce": "nonce_1"
+        }
+      }
+    },
+    {
+      "name": "reject-multiple-duplicates",
+      "schema": "Decision",
+      "valid": false,
+      "value": {
+        "kind": "question",
+        "answers": {
+          "q_multi": [
+            "one",
+            "one"
+          ]
+        }
+      }
+    },
+    {
+      "name": "reject-answer-object-injection",
+      "schema": "Decision",
+      "valid": false,
+      "value": {
+        "kind": "question",
+        "answers": {
+          "q1": {
+            "command": "anything"
+          }
+        }
+      }
+    },
+    {
+      "name": "reject-approval-and-answer",
+      "schema": "Decision",
+      "valid": false,
+      "value": {
+        "kind": "approval",
+        "choiceId": "allow_once",
+        "answers": {}
+      }
+    },
+    {
+      "name": "reject-zero-choice-limit",
+      "schema": "Question",
+      "valid": false,
+      "value": {
+        "id": "q1",
+        "label": "选",
+        "required": true,
+        "type": "multiple",
+        "options": [
+          {
+            "id": "a",
+            "label": "a"
+          }
+        ],
+        "max": 0
+      }
+    },
+    {
+      "name": "reject-question-no-options",
+      "schema": "Question",
+      "valid": false,
+      "value": {
+        "id": "q1",
+        "label": "选",
+        "required": true,
+        "type": "single",
+        "options": []
+      }
+    },
+    {
+      "name": "reject-wrong-timestamp",
+      "schema": "Operation",
+      "valid": false,
+      "value": {
+        "id": "operation_00000001",
+        "kind": "respond",
+        "state": "accepted",
+        "createdAt": "yesterday",
+        "updatedAt": "2026-09-06T02:00:00Z",
+        "deadlineAt": "2026-09-06T02:05:00Z",
+        "result": null,
+        "error": null,
+        "revision": 1
+      }
+    },
+    {
+      "name": "reject-client-unknown-as-server-state",
+      "schema": "Operation",
+      "valid": false,
+      "value": {
+        "id": "operation_00000001",
+        "kind": "respond",
+        "state": "unknown",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "updatedAt": "2026-09-06T02:00:00Z",
+        "deadlineAt": "2026-09-06T02:05:00Z",
+        "result": null,
+        "error": null,
+        "revision": 1
+      }
+    },
+    {
+      "name": "reject-absolute-path-argument",
+      "schema": "DiffFile",
+      "valid": false,
+      "value": {
+        "id": "file_1",
+        "sessionId": "session_1",
+        "itemId": "diff_1",
+        "path": "src/gateway.go",
+        "language": "go",
+        "patch": "@@ -1 +1 @@\n-old\n+new",
+        "truncated": false,
+        "createdAt": "2026-09-06T02:00:00Z",
+        "absolutePath": "C:\\private"
+      }
+    },
+    {
+      "name": "reject-gateway-sequence-from-node",
+      "schema": "NodeEvent",
+      "valid": false,
+      "value": {
+        "sourceEventId": "source_1",
+        "sourceSequence": 1,
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "type": "message.completed",
+        "data": {
+          "itemId": "message_1",
+          "role": "assistant",
+          "text": "已检查 3 个相关文件。",
+          "truncated": false
+        },
+        "sequence": 100
+      }
+    },
+    {
+      "name": "reject-question-owner-from-node",
+      "schema": "NodeRequest",
+      "valid": false,
+      "value": {
+        "id": "request_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "kind": "question",
+        "title": "断线后希望保留哪些内容？",
+        "summary": "请确认本次交互方案。回答只用于当前问题。",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "expiresAt": "2026-09-06T02:05:00Z",
+        "questions": [
+          {
+            "id": "q1",
+            "label": "选择恢复策略",
+            "required": true,
+            "type": "single",
+            "options": [
+              {
+                "id": "keep_history",
+                "label": "保留已加载历史与输入草稿"
+              },
+              {
+                "id": "keep_draft",
+                "label": "只保留输入草稿"
+              }
+            ]
+          },
+          {
+            "id": "q2",
+            "label": "补充说明（选填）",
+            "required": false,
+            "type": "text",
+            "maxLength": 4000
+          }
+        ],
+        "userId": "user_2"
+      }
+    },
+    {
+      "name": "reject-node-revision-authority",
+      "schema": "NodeRequest",
+      "valid": false,
+      "value": {
+        "id": "request_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "kind": "question",
+        "title": "断线后希望保留哪些内容？",
+        "summary": "请确认本次交互方案。回答只用于当前问题。",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "expiresAt": "2026-09-06T02:05:00Z",
+        "questions": [
+          {
+            "id": "q1",
+            "label": "选择恢复策略",
+            "required": true,
+            "type": "single",
+            "options": [
+              {
+                "id": "keep_history",
+                "label": "保留已加载历史与输入草稿"
+              },
+              {
+                "id": "keep_draft",
+                "label": "只保留输入草稿"
+              }
+            ]
+          },
+          {
+            "id": "q2",
+            "label": "补充说明（选填）",
+            "required": false,
+            "type": "text",
+            "maxLength": 4000
+          }
+        ],
+        "revision": 3
+      }
+    },
+    {
+      "name": "reject-unknown-control-event",
+      "schema": "NodeEvent",
+      "valid": false,
+      "value": {
+        "sourceEventId": "source_1",
+        "sourceSequence": 1,
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "type": "run.native",
+        "data": {}
+      }
+    },
+    {
+      "name": "reject-malformed-code",
+      "schema": "PairPreviewInput",
+      "valid": false,
+      "value": {
+        "code": "123"
+      }
+    },
+    {
+      "name": "reject-money-float",
+      "schema": "TimelineItem",
+      "valid": false,
+      "value": {
+        "type": "usage",
+        "itemId": "usage_1",
+        "turnId": "turn_1",
+        "inputTokens": null,
+        "outputTokens": null,
+        "cost": {
+          "amount": 0.01,
+          "currency": "USD"
+        }
+      }
+    },
+    {
+      "name": "confirmed-has-native-receipt",
+      "schema": "Operation",
+      "valid": true,
+      "value": {
+        "id": "operation_00000001",
+        "kind": "respond",
+        "state": "confirmed",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "updatedAt": "2026-09-06T02:00:00Z",
+        "deadlineAt": "2026-09-06T02:05:00Z",
+        "result": {
+          "sessionId": "session_1",
+          "turnId": "turn_1",
+          "requestId": "request_1",
+          "nodeId": "node_1",
+          "queueItemId": null
+        },
+        "error": null,
+        "revision": 1
+      }
+    },
+    {
+      "name": "failed-has-typed-error",
+      "schema": "Operation",
+      "valid": true,
+      "value": {
+        "id": "operation_00000001",
+        "kind": "respond",
+        "state": "failed",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "updatedAt": "2026-09-06T02:00:00Z",
+        "deadlineAt": "2026-09-06T02:05:00Z",
+        "result": null,
+        "error": {
+          "code": "STALE_TURN",
+          "message": "旧轮次已结束",
+          "retryable": false,
+          "requestId": "trace_3"
+        },
+        "revision": 1
+      }
+    },
+    {
+      "name": "resolved-question-keeps-decision",
+      "schema": "InteractionRequest",
+      "valid": true,
+      "value": {
+        "id": "request_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "kind": "question",
+        "title": "断线后希望保留哪些内容？",
+        "summary": "请确认本次交互方案。回答只用于当前问题。",
+        "state": "resolved",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "expiresAt": "2026-09-06T02:05:00Z",
+        "revision": 1,
+        "decision": {
+          "kind": "question",
+          "answers": {
+            "q1": "keep_history",
+            "q2": "保留草稿即可继续"
+          }
+        },
+        "decisionOperationId": "operation_00000001",
+        "questions": [
+          {
+            "id": "q1",
+            "label": "选择恢复策略",
+            "required": true,
+            "type": "single",
+            "options": [
+              {
+                "id": "keep_history",
+                "label": "保留已加载历史与输入草稿"
+              },
+              {
+                "id": "keep_draft",
+                "label": "只保留输入草稿"
+              }
+            ]
+          },
+          {
+            "id": "q2",
+            "label": "补充说明（选填）",
+            "required": false,
+            "type": "text",
+            "maxLength": 4000
+          }
+        ]
+      }
+    },
+    {
+      "name": "reject-confirmed-without-result",
+      "schema": "Operation",
+      "valid": false,
+      "value": {
+        "id": "operation_00000001",
+        "kind": "respond",
+        "state": "confirmed",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "updatedAt": "2026-09-06T02:00:00Z",
+        "deadlineAt": "2026-09-06T02:05:00Z",
+        "result": null,
+        "error": null,
+        "revision": 1
+      }
+    },
+    {
+      "name": "reject-failed-without-error",
+      "schema": "Operation",
+      "valid": false,
+      "value": {
+        "id": "operation_00000001",
+        "kind": "respond",
+        "state": "failed",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "updatedAt": "2026-09-06T02:00:00Z",
+        "deadlineAt": "2026-09-06T02:05:00Z",
+        "result": null,
+        "error": null,
+        "revision": 1
+      }
+    },
+    {
+      "name": "reject-approval-decision-on-question",
+      "schema": "InteractionRequest",
+      "valid": false,
+      "value": {
+        "id": "request_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "kind": "question",
+        "title": "断线后希望保留哪些内容？",
+        "summary": "请确认本次交互方案。回答只用于当前问题。",
+        "state": "resolved",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "expiresAt": "2026-09-06T02:05:00Z",
+        "revision": 1,
+        "decision": {
+          "kind": "approval",
+          "choiceId": "allow_once"
+        },
+        "decisionOperationId": "operation_00000001",
+        "questions": [
+          {
+            "id": "q1",
+            "label": "选择恢复策略",
+            "required": true,
+            "type": "single",
+            "options": [
+              {
+                "id": "keep_history",
+                "label": "保留已加载历史与输入草稿"
+              },
+              {
+                "id": "keep_draft",
+                "label": "只保留输入草稿"
+              }
+            ]
+          },
+          {
+            "id": "q2",
+            "label": "补充说明（选填）",
+            "required": false,
+            "type": "text",
+            "maxLength": 4000
+          }
+        ]
+      }
+    },
+    {
+      "name": "reject-resolved-without-decision",
+      "schema": "InteractionRequest",
+      "valid": false,
+      "value": {
+        "id": "request_1",
+        "sessionId": "session_1",
+        "turnId": "turn_1",
+        "kind": "question",
+        "title": "断线后希望保留哪些内容？",
+        "summary": "请确认本次交互方案。回答只用于当前问题。",
+        "state": "resolved",
+        "createdAt": "2026-09-06T02:00:00Z",
+        "expiresAt": "2026-09-06T02:05:00Z",
+        "revision": 1,
+        "decision": null,
+        "decisionOperationId": null,
+        "questions": [
+          {
+            "id": "q1",
+            "label": "选择恢复策略",
+            "required": true,
+            "type": "single",
+            "options": [
+              {
+                "id": "keep_history",
+                "label": "保留已加载历史与输入草稿"
+              },
+              {
+                "id": "keep_draft",
+                "label": "只保留输入草稿"
+              }
+            ]
+          },
+          {
+            "id": "q2",
+            "label": "补充说明（选填）",
+            "required": false,
+            "type": "text",
+            "maxLength": 4000
+          }
+        ]
+      }
+    },
+    {
+      "name": "reject-absolute-posix-display-path",
+      "schema": "DiffFile",
+      "valid": false,
+      "value": {
+        "id": "file_1",
+        "sessionId": "session_1",
+        "itemId": "diff_1",
+        "path": "/etc/private",
+        "language": "go",
+        "patch": "@@ -1 +1 @@\n-old\n+new",
+        "truncated": false,
+        "createdAt": "2026-09-06T02:00:00Z"
+      }
+    },
+    {
+      "name": "reject-absolute-windows-display-path",
+      "schema": "DiffFile",
+      "valid": false,
+      "value": {
+        "id": "file_1",
+        "sessionId": "session_1",
+        "itemId": "diff_1",
+        "path": "C:/private",
+        "language": "go",
+        "patch": "@@ -1 +1 @@\n-old\n+new",
+        "truncated": false,
+        "createdAt": "2026-09-06T02:00:00Z"
+      }
+    },
+    {
+      "name": "reject-parent-traversal-display-path",
+      "schema": "DiffFile",
+      "valid": false,
+      "value": {
+        "id": "file_1",
+        "sessionId": "session_1",
+        "itemId": "diff_1",
+        "path": "src/../private",
+        "language": "go",
+        "patch": "@@ -1 +1 @@\n-old\n+new",
+        "truncated": false,
+        "createdAt": "2026-09-06T02:00:00Z"
+      }
+    },
+    {
+      "name": "reject-windows-separator-display-path",
+      "schema": "DiffFile",
+      "valid": false,
+      "value": {
+        "id": "file_1",
+        "sessionId": "session_1",
+        "itemId": "diff_1",
+        "path": "src\\gateway.go",
+        "language": "go",
+        "patch": "@@ -1 +1 @@\n-old\n+new",
+        "truncated": false,
+        "createdAt": "2026-09-06T02:00:00Z"
+      }
+    }
+  ]
+}

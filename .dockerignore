@@ -1,0 +1,10 @@
+.runtime
+node_modules
+bin
+.env
+.env.*
+test-results
+coverage
+*.log
+*.db
+.git

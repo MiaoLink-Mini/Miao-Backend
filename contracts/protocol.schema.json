@@ -1,0 +1,7579 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weagent.invalid/contracts/protocol.schema.json",
+  "title": "WeAgent project-owned protocol v1",
+  "description": "Design-stage project contract; not any external Agent's native protocol. Definitions are the source of truth. See docs/backend-design.md for cross-record invariants.",
+  "$defs": {
+    "Id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "Sequence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "Prompt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000,
+      "pattern": "\\S"
+    },
+    "Text": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 48000
+    },
+    "OpaqueToken": {
+      "type": "string",
+      "minLength": 32,
+      "maxLength": 512
+    },
+    "Capabilities": {
+      "type": "object",
+      "properties": {
+        "send": {
+          "type": "boolean"
+        },
+        "cancel": {
+          "type": "boolean"
+        },
+        "approval": {
+          "type": "boolean"
+        },
+        "question": {
+          "type": "boolean"
+        },
+        "diff": {
+          "type": "boolean"
+        },
+        "plan": {
+          "type": "boolean"
+        },
+        "usage": {
+          "type": "boolean"
+        },
+        "queue": {
+          "type": "boolean"
+        },
+        "steer": {
+          "type": "boolean"
+        },
+        "models": {
+          "type": "boolean",
+          "description": "Native model catalog and session-scoped selection; absent means unsupported."
+        },
+        "compact": {
+          "type": "boolean",
+          "description": "Explicit native context compaction; absent means unsupported."
+        },
+        "workspace": {
+          "type": "boolean"
+        },
+        "historyImport": {
+          "type": "boolean"
+        },
+        "workspaceSections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "account",
+              "history",
+              "config",
+              "thinking",
+              "permissions",
+              "sources",
+              "output_styles",
+              "agents",
+              "skills",
+              "commands",
+              "mcp",
+              "extensions",
+              "tasks",
+              "checkpoints",
+              "retry",
+              "goal",
+              "review_targets"
+            ]
+          },
+          "uniqueItems": true,
+          "maxItems": 24
+        }
+      },
+      "required": [
+        "send",
+        "cancel",
+        "approval",
+        "question",
+        "diff",
+        "plan",
+        "usage",
+        "queue",
+        "steer"
+      ],
+      "additionalProperties": false
+    },
+    "SessionState": {
+      "type": "string",
+      "enum": [
+        "idle",
+        "running",
+        "waiting_approval",
+        "waiting_input",
+        "cancelling",
+        "completed",
+        "cancelled",
+        "failed",
+        "closed"
+      ]
+    },
+    "ErrorCode": {
+      "type": "string",
+      "enum": [
+        "UNAUTHENTICATED",
+        "FORBIDDEN",
+        "NOT_FOUND",
+        "VALIDATION_FAILED",
+        "IDEMPOTENCY_CONFLICT",
+        "NODE_OFFLINE",
+        "CAPABILITY_CHANGED",
+        "CAPABILITY_UNSUPPORTED",
+        "READ_ONLY",
+        "STALE_TURN",
+        "REQUEST_EXPIRED",
+        "REQUEST_ALREADY_DECIDED",
+        "CURSOR_EXPIRED",
+        "CURSOR_AHEAD",
+        "RATE_LIMITED",
+        "PAYLOAD_TOO_LARGE",
+        "PROTOCOL_UNSUPPORTED",
+        "SOURCE_CONFLICT",
+        "PAIRING_INVALID",
+        "PAIRING_CONFLICT",
+        "OPERATION_UNKNOWN",
+        "SERVICE_UNAVAILABLE",
+        "INTERNAL",
+        "HISTORY_PURGED",
+        "SHARE_UNAVAILABLE"
+      ]
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ErrorCode"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "requestId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "retryable",
+        "requestId"
+      ],
+      "additionalProperties": false
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/Error"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 80
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "displayName",
+        "createdAt"
+      ],
+      "additionalProperties": false
+    },
+    "Node": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "windows",
+            "macos",
+            "linux",
+            "other"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 80
+        },
+        "online": {
+          "type": "boolean"
+        },
+        "lastSeen": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revoked": {
+          "type": "boolean"
+        },
+        "revision": {
+          "$ref": "#/$defs/Sequence"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "platform",
+        "version",
+        "online",
+        "lastSeen",
+        "revoked",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "Project": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "nodeId": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1000
+        },
+        "branch": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "valid": {
+          "type": "boolean"
+        },
+        "revision": {
+          "$ref": "#/$defs/Sequence"
+        }
+      },
+      "required": [
+        "id",
+        "nodeId",
+        "name",
+        "description",
+        "branch",
+        "valid",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "Agent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "nodeId": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "unavailable",
+            "error"
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "adapterVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "capabilities": {
+          "$ref": "#/$defs/Capabilities"
+        },
+        "capabilityRevision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "revision": {
+          "$ref": "#/$defs/Sequence"
+        }
+      },
+      "required": [
+        "id",
+        "nodeId",
+        "name",
+        "state",
+        "version",
+        "adapterVersion",
+        "capabilities",
+        "capabilityRevision",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "QueueItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "operationId": {
+          "$ref": "#/$defs/Id"
+        },
+        "text": {
+          "$ref": "#/$defs/Prompt"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "starting"
+          ]
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "operationId",
+        "text",
+        "state",
+        "createdAt"
+      ],
+      "additionalProperties": false
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "nodeId": {
+          "$ref": "#/$defs/Id"
+        },
+        "projectId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agentId": {
+          "$ref": "#/$defs/Id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "state": {
+          "$ref": "#/$defs/SessionState"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "managed",
+            "readonly"
+          ]
+        },
+        "capabilities": {
+          "$ref": "#/$defs/Capabilities"
+        },
+        "capabilityRevision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "queue": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/QueueItem"
+          },
+          "maxItems": 20,
+          "minItems": 0
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "updatedAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "revision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "lastSequence": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "historyState": {
+          "type": "string",
+          "enum": [
+            "available",
+            "purged"
+          ]
+        },
+        "pinned": {
+          "type": "boolean"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "maxItems": 10
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "parentSessionId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "originMode": {
+          "type": "string",
+          "enum": [
+            "new",
+            "resume",
+            "fork",
+            "clone",
+            "attach",
+            "import"
+          ]
+        },
+        "originPoint": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "nodeId",
+        "projectId",
+        "agentId",
+        "title",
+        "state",
+        "turnId",
+        "mode",
+        "capabilities",
+        "capabilityRevision",
+        "queue",
+        "createdAt",
+        "updatedAt",
+        "revision",
+        "lastSequence",
+        "historyState"
+      ],
+      "additionalProperties": false
+    },
+    "Choice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "Question": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "type": {
+              "const": "single"
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Choice"
+              },
+              "maxItems": 20,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "required",
+            "type",
+            "options"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "type": {
+              "const": "multiple"
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Choice"
+              },
+              "maxItems": 20,
+              "minItems": 1
+            },
+            "max": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "required",
+            "type",
+            "options",
+            "max"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "type": {
+              "const": "text"
+            },
+            "maxLength": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4000
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "required",
+            "type",
+            "maxLength"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Answers": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/Id"
+      },
+      "maxProperties": 20,
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 4000
+          },
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Id"
+            },
+            "maxItems": 20,
+            "minItems": 0,
+            "uniqueItems": true
+          }
+        ]
+      }
+    },
+    "Decision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "approval"
+            },
+            "choiceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "choiceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "question"
+            },
+            "answers": {
+              "$ref": "#/$defs/Answers"
+            }
+          },
+          "required": [
+            "kind",
+            "answers"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "InteractionRequest": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 4000
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "deciding",
+                "resolved",
+                "expired",
+                "cancelled"
+              ]
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "expiresAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "revision": {
+              "$ref": "#/$defs/Sequence"
+            },
+            "decision": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "const": "approval"
+                    },
+                    "choiceId": {
+                      "$ref": "#/$defs/Id"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "choiceId"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "decisionOperationId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "approval"
+            },
+            "action": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 200
+            },
+            "scope": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 1000
+            },
+            "choices": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Choice"
+              },
+              "maxItems": 10,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "turnId",
+            "title",
+            "summary",
+            "state",
+            "createdAt",
+            "expiresAt",
+            "revision",
+            "decision",
+            "decisionOperationId",
+            "kind",
+            "action",
+            "scope",
+            "choices"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "deciding",
+                      "resolved"
+                    ]
+                  }
+                },
+                "required": [
+                  "state"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "decision": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "approval"
+                      },
+                      "choiceId": {
+                        "$ref": "#/$defs/Id"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "choiceId"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "decisionOperationId": {
+                    "$ref": "#/$defs/Id"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "state": {
+                    "const": "pending"
+                  }
+                },
+                "required": [
+                  "state"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "decision": {
+                    "type": "null"
+                  },
+                  "decisionOperationId": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 4000
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "deciding",
+                "resolved",
+                "expired",
+                "cancelled"
+              ]
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "expiresAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "revision": {
+              "$ref": "#/$defs/Sequence"
+            },
+            "decision": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "const": "question"
+                    },
+                    "answers": {
+                      "$ref": "#/$defs/Answers"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "answers"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "decisionOperationId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "question"
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Question"
+              },
+              "maxItems": 20,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "turnId",
+            "title",
+            "summary",
+            "state",
+            "createdAt",
+            "expiresAt",
+            "revision",
+            "decision",
+            "decisionOperationId",
+            "kind",
+            "questions"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "deciding",
+                      "resolved"
+                    ]
+                  }
+                },
+                "required": [
+                  "state"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "decision": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "const": "question"
+                      },
+                      "answers": {
+                        "$ref": "#/$defs/Answers"
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "answers"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "decisionOperationId": {
+                    "$ref": "#/$defs/Id"
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "state": {
+                    "const": "pending"
+                  }
+                },
+                "required": [
+                  "state"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "decision": {
+                    "type": "null"
+                  },
+                  "decisionOperationId": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "Notification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "sessionId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "approval",
+            "question",
+            "completed",
+            "failed",
+            "system"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        "read": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "revision": {
+          "$ref": "#/$defs/Sequence"
+        }
+      },
+      "required": [
+        "id",
+        "sessionId",
+        "kind",
+        "title",
+        "summary",
+        "read",
+        "createdAt",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "Audit": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "login",
+            "pair",
+            "revoke",
+            "create",
+            "send",
+            "queue",
+            "cancel",
+            "respond",
+            "mark_read",
+            "native",
+            "organize",
+            "delete_history",
+            "import_history",
+            "subscribe"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "delivered",
+            "confirmed",
+            "failed",
+            "reconciling"
+          ]
+        },
+        "operationId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nodeId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sessionId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "action",
+        "state",
+        "operationId",
+        "nodeId",
+        "sessionId",
+        "createdAt"
+      ],
+      "additionalProperties": false
+    },
+    "OperationResult": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "requestId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nodeId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "queueItemId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "native": {
+          "$ref": "#/$defs/NativeResult"
+        }
+      },
+      "required": [
+        "sessionId",
+        "turnId",
+        "requestId",
+        "nodeId",
+        "queueItemId"
+      ],
+      "additionalProperties": false
+    },
+    "Operation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "create",
+            "send",
+            "queue",
+            "cancel",
+            "respond",
+            "pair",
+            "revoke",
+            "mark_read",
+            "native",
+            "organize",
+            "delete_history",
+            "import_history",
+            "subscribe"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "delivered",
+            "confirmed",
+            "failed",
+            "reconciling"
+          ]
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "updatedAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "deadlineAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OperationResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "$ref": "#/$defs/Sequence"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "state",
+        "createdAt",
+        "updatedAt",
+        "deadlineAt",
+        "result",
+        "error",
+        "revision"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "failed"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "error": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "confirmed"
+              }
+            },
+            "required": [
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "$ref": "#/$defs/OperationResult"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "native"
+              },
+              "state": {
+                "const": "confirmed"
+              }
+            },
+            "required": [
+              "kind",
+              "state"
+            ]
+          },
+          "then": {
+            "properties": {
+              "result": {
+                "type": "object",
+                "required": [
+                  "native"
+                ],
+                "properties": {
+                  "native": {
+                    "$ref": "#/$defs/NativeResult"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "CreateSession": {
+      "type": "object",
+      "properties": {
+        "nodeId": {
+          "$ref": "#/$defs/Id"
+        },
+        "projectId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agentId": {
+          "$ref": "#/$defs/Id"
+        },
+        "prompt": {
+          "$ref": "#/$defs/Prompt"
+        },
+        "capabilityRevision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "origin": {
+          "$ref": "#/$defs/SessionOrigin"
+        },
+        "preset": {
+          "$ref": "#/$defs/SessionPreset"
+        },
+        "historyOnly": {
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "required": [
+        "nodeId",
+        "projectId",
+        "agentId",
+        "capabilityRevision"
+      ],
+      "additionalProperties": false,
+      "not": {
+        "type": "object",
+        "properties": {
+          "origin": {},
+          "preset": {}
+        },
+        "required": [
+          "origin",
+          "preset"
+        ]
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "historyOnly"
+            ],
+            "type": "object",
+            "properties": {
+              "historyOnly": {}
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "prompt"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "prompt": {}
+                  }
+                },
+                {
+                  "required": [
+                    "preset"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "preset": {}
+                  }
+                }
+              ]
+            }
+          },
+          "else": {
+            "required": [
+              "prompt"
+            ],
+            "type": "object",
+            "properties": {
+              "prompt": {}
+            }
+          }
+        }
+      ]
+    },
+    "SendMessage": {
+      "type": "object",
+      "properties": {
+        "expectedTurnId": {
+          "$ref": "#/$defs/Id"
+        },
+        "text": {
+          "$ref": "#/$defs/Prompt"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "send",
+            "queue"
+          ]
+        },
+        "capabilityRevision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "maxItems": 8
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Id"
+          },
+          "maxItems": 8
+        },
+        "commandId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "expectedTurnId",
+        "text",
+        "mode",
+        "capabilityRevision"
+      ],
+      "additionalProperties": false
+    },
+    "CancelTurn": {
+      "type": "object",
+      "properties": {
+        "expectedTurnId": {
+          "$ref": "#/$defs/Id"
+        },
+        "capabilityRevision": {
+          "$ref": "#/$defs/Sequence"
+        }
+      },
+      "required": [
+        "expectedTurnId",
+        "capabilityRevision"
+      ],
+      "additionalProperties": false
+    },
+    "RespondRequest": {
+      "type": "object",
+      "properties": {
+        "expectedTurnId": {
+          "$ref": "#/$defs/Id"
+        },
+        "requestRevision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "capabilityRevision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "decision": {
+          "$ref": "#/$defs/Decision"
+        }
+      },
+      "required": [
+        "expectedTurnId",
+        "requestRevision",
+        "capabilityRevision",
+        "decision"
+      ],
+      "additionalProperties": false
+    },
+    "Empty": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "Login": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "code"
+      ],
+      "additionalProperties": false
+    },
+    "LoginResult": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "$ref": "#/$defs/OpaqueToken"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "user": {
+          "$ref": "#/$defs/User"
+        }
+      },
+      "required": [
+        "accessToken",
+        "expiresAt",
+        "user"
+      ],
+      "additionalProperties": false
+    },
+    "PairPreviewInput": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 12,
+          "pattern": "^[A-HJ-NP-Z2-9]{12}$"
+        }
+      },
+      "required": [
+        "code"
+      ],
+      "additionalProperties": false
+    },
+    "PairPreview": {
+      "type": "object",
+      "properties": {
+        "ticketId": {
+          "$ref": "#/$defs/Id"
+        },
+        "nodeName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "windows",
+            "macos",
+            "linux",
+            "other"
+          ]
+        },
+        "keyFingerprint": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "ticketId",
+        "nodeName",
+        "platform",
+        "keyFingerprint",
+        "expiresAt"
+      ],
+      "additionalProperties": false
+    },
+    "PairConfirm": {
+      "type": "object",
+      "properties": {
+        "ticketId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "ticketId"
+      ],
+      "additionalProperties": false
+    },
+    "NodesPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Node"
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "nextPageToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "nextPageToken"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectsPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Project"
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "nextPageToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "nextPageToken"
+      ],
+      "additionalProperties": false
+    },
+    "AgentsPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Agent"
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "nextPageToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "nextPageToken"
+      ],
+      "additionalProperties": false
+    },
+    "SessionsPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Session"
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "nextPageToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "nextPageToken"
+      ],
+      "additionalProperties": false
+    },
+    "RequestsPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InteractionRequest"
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "nextPageToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "nextPageToken"
+      ],
+      "additionalProperties": false
+    },
+    "NotificationsPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Notification"
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "nextPageToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "nextPageToken"
+      ],
+      "additionalProperties": false
+    },
+    "AuditsPage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Audit"
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "nextPageToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "nextPageToken"
+      ],
+      "additionalProperties": false
+    },
+    "Bootstrap": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/$defs/User"
+        },
+        "revision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "serverTime": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "counts": {
+          "type": "object",
+          "properties": {
+            "onlineNodes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sessions": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "pendingRequests": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "unreadNotifications": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "onlineNodes",
+            "sessions",
+            "pendingRequests",
+            "unreadNotifications"
+          ],
+          "additionalProperties": false
+        },
+        "nodes": {
+          "$ref": "#/$defs/NodesPage"
+        },
+        "projects": {
+          "$ref": "#/$defs/ProjectsPage"
+        },
+        "agents": {
+          "$ref": "#/$defs/AgentsPage"
+        },
+        "sessions": {
+          "$ref": "#/$defs/SessionsPage"
+        },
+        "requests": {
+          "$ref": "#/$defs/RequestsPage"
+        },
+        "notifications": {
+          "$ref": "#/$defs/NotificationsPage"
+        },
+        "audit": {
+          "$ref": "#/$defs/AuditsPage"
+        }
+      },
+      "required": [
+        "user",
+        "revision",
+        "serverTime",
+        "counts",
+        "nodes",
+        "projects",
+        "agents",
+        "sessions",
+        "requests",
+        "notifications",
+        "audit"
+      ],
+      "additionalProperties": false
+    },
+    "FileSummary": {
+      "type": "object",
+      "properties": {
+        "fileId": {
+          "$ref": "#/$defs/Id"
+        },
+        "path": {
+          "$ref": "#/$defs/DisplayPath"
+        },
+        "added": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "removed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "fileId",
+        "path",
+        "added",
+        "removed"
+      ],
+      "additionalProperties": false
+    },
+    "DiffFile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "itemId": {
+          "$ref": "#/$defs/Id"
+        },
+        "path": {
+          "$ref": "#/$defs/DisplayPath"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 50
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "patch": {
+          "$ref": "#/$defs/Text"
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "sessionId",
+        "itemId",
+        "path",
+        "language",
+        "patch",
+        "truncated",
+        "createdAt"
+      ],
+      "additionalProperties": false
+    },
+    "TimelineItem": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "message"
+            },
+            "itemId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "user",
+                "assistant"
+              ]
+            },
+            "text": {
+              "$ref": "#/$defs/Text"
+            },
+            "complete": {
+              "type": "boolean"
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "turnId",
+            "role",
+            "text",
+            "complete",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "tool"
+            },
+            "itemId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 200
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "running",
+                "completed",
+                "failed",
+                "cancelled"
+              ]
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 4000
+            },
+            "output": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Text"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "turnId",
+            "title",
+            "state",
+            "summary",
+            "output",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "plan"
+            },
+            "itemId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 200
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/Id"
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 0,
+                    "maxLength": 1000
+                  },
+                  "state": {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "running",
+                      "completed",
+                      "cancelled"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "text",
+                  "state"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 100,
+              "minItems": 0
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "turnId",
+            "title",
+            "steps"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "diff"
+            },
+            "itemId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 200
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 4000
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/FileSummary"
+              },
+              "maxItems": 100,
+              "minItems": 0
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "turnId",
+            "title",
+            "summary",
+            "files"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "usage"
+            },
+            "itemId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "inputTokens": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "outputTokens": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cost": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "amount": {
+                      "type": "string",
+                      "pattern": "^[0-9]+(\\.[0-9]+)?$"
+                    },
+                    "currency": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    }
+                  },
+                  "required": [
+                    "amount",
+                    "currency"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "contextUsedTokens": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "contextWindowTokens": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "turnId",
+            "inputTokens",
+            "outputTokens",
+            "cost"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "status",
+                "result",
+                "error"
+              ]
+            },
+            "itemId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 200
+            },
+            "text": {
+              "$ref": "#/$defs/Text"
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "turnId",
+            "title",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "request"
+            },
+            "itemId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "requestId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "type",
+            "itemId",
+            "turnId",
+            "requestId"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "SessionEvent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "type": {
+              "const": "message.delta"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "itemId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                }
+              },
+              "required": [
+                "itemId",
+                "role",
+                "text"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "sessionId",
+            "turnId",
+            "sequence",
+            "createdAt",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "type": {
+              "const": "message.completed"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "itemId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "text": {
+                  "$ref": "#/$defs/Text"
+                },
+                "truncated": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "itemId",
+                "role",
+                "text",
+                "truncated"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "sessionId",
+            "turnId",
+            "sequence",
+            "createdAt",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "type": {
+              "const": "item.upsert"
+            },
+            "data": {
+              "$ref": "#/$defs/TimelineItem"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "sessionId",
+            "turnId",
+            "sequence",
+            "createdAt",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "type": {
+              "const": "request.upsert"
+            },
+            "data": {
+              "$ref": "#/$defs/InteractionRequest"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "sessionId",
+            "turnId",
+            "sequence",
+            "createdAt",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "type": {
+              "const": "session.state"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "$ref": "#/$defs/SessionState"
+                },
+                "turnId": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Id"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "revision": {
+                  "$ref": "#/$defs/Sequence"
+                }
+              },
+              "required": [
+                "state",
+                "turnId",
+                "revision"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "sessionId",
+            "turnId",
+            "sequence",
+            "createdAt",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "type": {
+              "const": "queue.updated"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/QueueItem"
+                  },
+                  "maxItems": 20,
+                  "minItems": 0
+                }
+              },
+              "required": [
+                "items"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "sessionId",
+            "turnId",
+            "sequence",
+            "createdAt",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "type": {
+              "const": "capabilities.updated"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "capabilities": {
+                  "$ref": "#/$defs/Capabilities"
+                },
+                "capabilityRevision": {
+                  "$ref": "#/$defs/Sequence"
+                }
+              },
+              "required": [
+                "capabilities",
+                "capabilityRevision"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "sessionId",
+            "turnId",
+            "sequence",
+            "createdAt",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "type": {
+              "const": "diff.file"
+            },
+            "data": {
+              "$ref": "#/$defs/DiffFile"
+            }
+          },
+          "required": [
+            "version",
+            "id",
+            "sessionId",
+            "turnId",
+            "sequence",
+            "createdAt",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "NodeEvent": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "sourceEventId": {
+              "$ref": "#/$defs/Id"
+            },
+            "sourceSequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "type": {
+              "const": "message.delta"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "itemId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 4096
+                }
+              },
+              "required": [
+                "itemId",
+                "role",
+                "text"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "sourceEventId",
+            "sourceSequence",
+            "sessionId",
+            "turnId",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sourceEventId": {
+              "$ref": "#/$defs/Id"
+            },
+            "sourceSequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "type": {
+              "const": "message.completed"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "itemId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "user",
+                    "assistant"
+                  ]
+                },
+                "text": {
+                  "$ref": "#/$defs/Text"
+                },
+                "truncated": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "itemId",
+                "role",
+                "text",
+                "truncated"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "sourceEventId",
+            "sourceSequence",
+            "sessionId",
+            "turnId",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sourceEventId": {
+              "$ref": "#/$defs/Id"
+            },
+            "sourceSequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "type": {
+              "const": "item.upsert"
+            },
+            "data": {
+              "$ref": "#/$defs/TimelineItem"
+            }
+          },
+          "required": [
+            "sourceEventId",
+            "sourceSequence",
+            "sessionId",
+            "turnId",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sourceEventId": {
+              "$ref": "#/$defs/Id"
+            },
+            "sourceSequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "type": {
+              "const": "diff.file"
+            },
+            "data": {
+              "$ref": "#/$defs/DiffFile"
+            }
+          },
+          "required": [
+            "sourceEventId",
+            "sourceSequence",
+            "sessionId",
+            "turnId",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "EventsPage": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "after": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "highWater": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SessionEvent"
+          },
+          "maxItems": 200,
+          "minItems": 0
+        },
+        "nextAfter": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "hasMore": {
+          "type": "boolean"
+        },
+        "earliestSequence": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "sessionId",
+        "after",
+        "highWater",
+        "events",
+        "nextAfter",
+        "hasMore",
+        "earliestSequence"
+      ],
+      "additionalProperties": false
+    },
+    "Checkpoint": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "sessionId",
+        "sequence",
+        "createdAt",
+        "itemCount",
+        "expiresAt"
+      ],
+      "additionalProperties": false
+    },
+    "CheckpointItemsPage": {
+      "type": "object",
+      "properties": {
+        "checkpointId": {
+          "$ref": "#/$defs/Id"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimelineItem"
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "nextPageToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "checkpointId",
+        "sequence",
+        "items",
+        "nextPageToken"
+      ],
+      "additionalProperties": false
+    },
+    "ResourceChange": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "resourceType": {
+          "type": "string",
+          "enum": [
+            "node",
+            "project",
+            "agent",
+            "session",
+            "request",
+            "notification",
+            "audit",
+            "operation"
+          ]
+        },
+        "resourceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "upsert",
+            "remove"
+          ]
+        },
+        "resourceRevision": {
+          "$ref": "#/$defs/Sequence"
+        }
+      },
+      "required": [
+        "revision",
+        "resourceType",
+        "resourceId",
+        "action",
+        "resourceRevision"
+      ],
+      "additionalProperties": false
+    },
+    "ChangesPage": {
+      "type": "object",
+      "properties": {
+        "after": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "highWater": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ResourceChange"
+          },
+          "maxItems": 200,
+          "minItems": 0
+        },
+        "nextAfter": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "hasMore": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "after",
+        "highWater",
+        "changes",
+        "nextAfter",
+        "hasMore"
+      ],
+      "additionalProperties": false
+    },
+    "Health": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "unavailable"
+          ]
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "NodeCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "$ref": "#/$defs/Id"
+            },
+            "nodeEpoch": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "deadlineAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "kind": {
+              "const": "create"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "payload": {
+              "$ref": "#/$defs/CreateSession"
+            }
+          },
+          "required": [
+            "operationId",
+            "nodeEpoch",
+            "deadlineAt",
+            "kind",
+            "sessionId",
+            "turnId",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "$ref": "#/$defs/Id"
+            },
+            "nodeEpoch": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "deadlineAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "kind": {
+              "const": "send"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "nextTurnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "payload": {
+              "$ref": "#/$defs/SendMessage"
+            }
+          },
+          "required": [
+            "operationId",
+            "nodeEpoch",
+            "deadlineAt",
+            "kind",
+            "sessionId",
+            "nextTurnId",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "$ref": "#/$defs/Id"
+            },
+            "nodeEpoch": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "deadlineAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "kind": {
+              "const": "cancel"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "payload": {
+              "$ref": "#/$defs/CancelTurn"
+            }
+          },
+          "required": [
+            "operationId",
+            "nodeEpoch",
+            "deadlineAt",
+            "kind",
+            "sessionId",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "$ref": "#/$defs/Id"
+            },
+            "nodeEpoch": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "deadlineAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "kind": {
+              "const": "respond"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "requestId": {
+              "$ref": "#/$defs/Id"
+            },
+            "payload": {
+              "$ref": "#/$defs/RespondRequest"
+            }
+          },
+          "required": [
+            "operationId",
+            "nodeEpoch",
+            "deadlineAt",
+            "kind",
+            "sessionId",
+            "requestId",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "$ref": "#/$defs/Id"
+            },
+            "nodeEpoch": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "deadlineAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "kind": {
+              "const": "native"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "payload": {
+              "$ref": "#/$defs/NativeControl"
+            },
+            "nextTurnId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "operationId",
+            "nodeEpoch",
+            "deadlineAt",
+            "kind",
+            "sessionId",
+            "payload",
+            "nextTurnId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operationId": {
+              "$ref": "#/$defs/Id"
+            },
+            "nodeEpoch": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "deadlineAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "kind": {
+              "const": "history"
+            },
+            "payload": {
+              "$ref": "#/$defs/ProjectHistory"
+            }
+          },
+          "required": [
+            "operationId",
+            "nodeEpoch",
+            "deadlineAt",
+            "kind",
+            "payload"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "NodeSessionState": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "turnId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "$ref": "#/$defs/SessionState"
+        },
+        "capabilities": {
+          "$ref": "#/$defs/Capabilities"
+        },
+        "capabilityRevision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "queue": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/QueueItem"
+          },
+          "maxItems": 20,
+          "minItems": 0
+        }
+      },
+      "required": [
+        "sessionId",
+        "turnId",
+        "state",
+        "capabilities",
+        "capabilityRevision",
+        "queue"
+      ],
+      "additionalProperties": false
+    },
+    "EnrollmentInput": {
+      "type": "object",
+      "properties": {
+        "publicKey": {
+          "type": "string",
+          "minLength": 44,
+          "maxLength": 44,
+          "pattern": "^[A-Za-z0-9+/]{43}=$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "windows",
+            "macos",
+            "linux",
+            "other"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 80
+        }
+      },
+      "required": [
+        "publicKey",
+        "name",
+        "platform",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "Enrollment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 12,
+          "pattern": "^[A-HJ-NP-Z2-9]{12}$"
+        },
+        "pollToken": {
+          "$ref": "#/$defs/OpaqueToken"
+        },
+        "keyFingerprint": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "pollToken",
+        "keyFingerprint",
+        "expiresAt"
+      ],
+      "additionalProperties": false
+    },
+    "EnrollmentStatus": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "confirmed",
+            "expired"
+          ]
+        },
+        "nodeId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "state",
+        "nodeId",
+        "expiresAt"
+      ],
+      "additionalProperties": false
+    },
+    "NodeChallengeInput": {
+      "type": "object",
+      "properties": {
+        "nodeId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "nodeId"
+      ],
+      "additionalProperties": false
+    },
+    "NodeChallenge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "signingInput": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "signingInput",
+        "expiresAt"
+      ],
+      "additionalProperties": false
+    },
+    "NodeProof": {
+      "type": "object",
+      "properties": {
+        "challengeId": {
+          "$ref": "#/$defs/Id"
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 88,
+          "maxLength": 88,
+          "pattern": "^[A-Za-z0-9+/]{86}==$"
+        }
+      },
+      "required": [
+        "challengeId",
+        "signature"
+      ],
+      "additionalProperties": false
+    },
+    "NodeToken": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "$ref": "#/$defs/OpaqueToken"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "accessToken",
+        "expiresAt"
+      ],
+      "additionalProperties": false
+    },
+    "ClientFrame": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "watch"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "revision": {
+                  "$ref": "#/$defs/Sequence"
+                },
+                "sessions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "sessionId": {
+                        "$ref": "#/$defs/Id"
+                      },
+                      "after": {
+                        "$ref": "#/$defs/Sequence"
+                      }
+                    },
+                    "required": [
+                      "sessionId",
+                      "after"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "maxItems": 20,
+                  "minItems": 0
+                }
+              },
+              "required": [
+                "revision",
+                "sessions"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "unwatch"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "sessionIds": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/Id"
+                  },
+                  "maxItems": 20,
+                  "minItems": 1,
+                  "uniqueItems": true
+                }
+              },
+              "required": [
+                "sessionIds"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "heartbeat"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "nonce": {
+                  "$ref": "#/$defs/Id"
+                }
+              },
+              "required": [
+                "nonce"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ServerFrame": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "ready"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "revision": {
+                  "$ref": "#/$defs/Sequence"
+                },
+                "sessions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "sessionId": {
+                        "$ref": "#/$defs/Id"
+                      },
+                      "highWater": {
+                        "$ref": "#/$defs/Sequence"
+                      }
+                    },
+                    "required": [
+                      "sessionId",
+                      "highWater"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "maxItems": 20,
+                  "minItems": 0
+                },
+                "heartbeatSeconds": {
+                  "type": "integer",
+                  "minimum": 5,
+                  "maximum": 60
+                }
+              },
+              "required": [
+                "revision",
+                "sessions",
+                "heartbeatSeconds"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "event"
+            },
+            "data": {
+              "$ref": "#/$defs/SessionEvent"
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "change"
+            },
+            "data": {
+              "$ref": "#/$defs/ResourceChange"
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "operation"
+            },
+            "data": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "heartbeat"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "nonce": {
+                  "$ref": "#/$defs/Id"
+                }
+              },
+              "required": [
+                "nonce"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "error"
+            },
+            "data": {
+              "$ref": "#/$defs/Error"
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "NodeToGatewayFrame": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "node.heartbeat"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "nonce": {
+                  "$ref": "#/$defs/Id"
+                }
+              },
+              "required": [
+                "epoch",
+                "nonce"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "node.inventory"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "inventoryId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "projects": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/NodeProject"
+                  },
+                  "maxItems": 100,
+                  "minItems": 0
+                },
+                "agents": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/NodeAgent"
+                  },
+                  "maxItems": 100,
+                  "minItems": 0
+                },
+                "complete": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "epoch",
+                "inventoryId",
+                "projects",
+                "agents",
+                "complete"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "node.events"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "events": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/NodeEvent"
+                  },
+                  "maxItems": 50,
+                  "minItems": 1
+                }
+              },
+              "required": [
+                "epoch",
+                "events"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "node.session"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "sourceEventId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "sourceSequence": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "session": {
+                  "$ref": "#/$defs/NodeSessionState"
+                }
+              },
+              "required": [
+                "epoch",
+                "sourceEventId",
+                "sourceSequence",
+                "session"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "node.request"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "sourceEventId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "sourceSequence": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "request": {
+                  "$ref": "#/$defs/NodeRequest"
+                }
+              },
+              "required": [
+                "epoch",
+                "sourceEventId",
+                "sourceSequence",
+                "request"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "command.ack"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "operationId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "delivered",
+                    "confirmed",
+                    "rejected",
+                    "unknown"
+                  ]
+                },
+                "result": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/OperationResult"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "error": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Error"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "epoch",
+                "operationId",
+                "state",
+                "result",
+                "error"
+              ],
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "state": {
+                        "const": "rejected"
+                      }
+                    },
+                    "required": [
+                      "state"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "error": {
+                        "$ref": "#/$defs/Error"
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "error": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "state": {
+                        "const": "confirmed"
+                      }
+                    },
+                    "required": [
+                      "state"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "result": {
+                        "$ref": "#/$defs/OperationResult"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "command.status"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "operationId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "not_seen",
+                    "delivered",
+                    "confirmed",
+                    "rejected",
+                    "unknown"
+                  ]
+                },
+                "result": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/OperationResult"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "error": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Error"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "epoch",
+                "operationId",
+                "state",
+                "result",
+                "error"
+              ],
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "state": {
+                        "const": "rejected"
+                      }
+                    },
+                    "required": [
+                      "state"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "error": {
+                        "$ref": "#/$defs/Error"
+                      }
+                    }
+                  },
+                  "else": {
+                    "properties": {
+                      "error": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "state": {
+                        "const": "confirmed"
+                      }
+                    },
+                    "required": [
+                      "state"
+                    ]
+                  },
+                  "then": {
+                    "properties": {
+                      "result": {
+                        "$ref": "#/$defs/OperationResult"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "node.request.cancel"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "sourceEventId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "sourceSequence": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "sessionId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "turnId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "requestId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "reason": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "epoch",
+                "sourceEventId",
+                "sourceSequence",
+                "sessionId",
+                "turnId",
+                "requestId",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "GatewayToNodeFrame": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "node.ready"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "nodeId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "heartbeatSeconds": {
+                  "type": "integer",
+                  "minimum": 5,
+                  "maximum": 60
+                },
+                "serverTime": {
+                  "$ref": "#/$defs/Timestamp"
+                }
+              },
+              "required": [
+                "nodeId",
+                "epoch",
+                "heartbeatSeconds",
+                "serverTime"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "node.heartbeat"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "nonce": {
+                  "$ref": "#/$defs/Id"
+                },
+                "serverTime": {
+                  "$ref": "#/$defs/Timestamp"
+                }
+              },
+              "required": [
+                "epoch",
+                "nonce",
+                "serverTime"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "command"
+            },
+            "data": {
+              "$ref": "#/$defs/NodeCommand"
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "command.query"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "operationId": {
+                  "$ref": "#/$defs/Id"
+                }
+              },
+              "required": [
+                "epoch",
+                "operationId"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "events.ack"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "epoch": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "sessionId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "sourceSequence": {
+                  "$ref": "#/$defs/Sequence"
+                },
+                "gatewaySequence": {
+                  "$ref": "#/$defs/Sequence"
+                }
+              },
+              "required": [
+                "epoch",
+                "sessionId",
+                "sourceSequence",
+                "gatewaySequence"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": "weagent/1"
+            },
+            "type": {
+              "const": "error"
+            },
+            "data": {
+              "$ref": "#/$defs/Error"
+            }
+          },
+          "required": [
+            "version",
+            "type",
+            "data"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "NodeProject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1000
+        },
+        "branch": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "valid": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "branch",
+        "valid"
+      ],
+      "additionalProperties": false
+    },
+    "NodeAgent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "unavailable",
+            "error"
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "adapterVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "capabilities": {
+          "$ref": "#/$defs/Capabilities"
+        },
+        "capabilityRevision": {
+          "$ref": "#/$defs/Sequence"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "state",
+        "version",
+        "adapterVersion",
+        "capabilities",
+        "capabilityRevision"
+      ],
+      "additionalProperties": false
+    },
+    "NodeRequest": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 4000
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "expiresAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "kind": {
+              "const": "approval"
+            },
+            "action": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 200
+            },
+            "scope": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 1000
+            },
+            "choices": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Choice"
+              },
+              "maxItems": 10,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "turnId",
+            "title",
+            "summary",
+            "createdAt",
+            "expiresAt",
+            "kind",
+            "action",
+            "scope",
+            "choices"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/Id"
+            },
+            "sessionId": {
+              "$ref": "#/$defs/Id"
+            },
+            "turnId": {
+              "$ref": "#/$defs/Id"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 4000
+            },
+            "createdAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "expiresAt": {
+              "$ref": "#/$defs/Timestamp"
+            },
+            "kind": {
+              "const": "question"
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Question"
+              },
+              "maxItems": 20,
+              "minItems": 1
+            }
+          },
+          "required": [
+            "id",
+            "sessionId",
+            "turnId",
+            "title",
+            "summary",
+            "createdAt",
+            "expiresAt",
+            "kind",
+            "questions"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "DisplayPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^(?!/)(?![A-Za-z]:)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\\\u0000-\\u001f]+$"
+    },
+    "NativeAction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "models"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "set_model"
+            },
+            "modelId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "action",
+            "modelId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "compact"
+            }
+          },
+          "required": [
+            "action"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "workspace"
+            },
+            "request": {
+              "$ref": "#/$defs/WorkspaceRequest"
+            }
+          },
+          "required": [
+            "action",
+            "request"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "NativeControl": {
+      "type": "object",
+      "properties": {
+        "expectedTurnId": {
+          "$ref": "#/$defs/Id"
+        },
+        "capabilityRevision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "control": {
+          "$ref": "#/$defs/NativeAction"
+        }
+      },
+      "required": [
+        "expectedTurnId",
+        "capabilityRevision",
+        "control"
+      ],
+      "additionalProperties": false
+    },
+    "NativeModel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "input": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "text",
+              "image",
+              "file"
+            ]
+          },
+          "maxItems": 3
+        },
+        "thinking": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "maxItems": 20
+        },
+        "inputEvidence": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "NativeResult": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "models"
+            },
+            "models": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/NativeModel"
+              },
+              "maxItems": 100
+            },
+            "selected": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "action",
+            "models",
+            "selected",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "set_model"
+            },
+            "modelId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "effect": {
+              "const": "next_turn"
+            },
+            "applied": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "action",
+            "modelId",
+            "effect",
+            "applied"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "compact"
+            },
+            "status": {
+              "enum": [
+                "started",
+                "completed"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "action",
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "workspace"
+            },
+            "requestKind": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "view": {
+              "$ref": "#/$defs/WorkspaceView"
+            }
+          },
+          "required": [
+            "action",
+            "requestKind",
+            "view"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "WorkspaceRequest": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "overview"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "project"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "files"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "artifacts"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "attachments"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "account"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "config"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "thinking"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "permissions"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "sources"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "output_styles"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "agents"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "skills"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "commands"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "extensions"
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "query": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "mcp"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "tasks"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "checkpoints"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "retry"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "queue"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "history"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "diagnostics"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "goal"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "widgets"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "list_files"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "read_file"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "format": {
+              "type": "string",
+              "enum": [
+                "text",
+                "base64"
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId",
+            "format"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "file_status"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "mcp_tools"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "task"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "history_messages"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "external"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "begin_upload"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "mediaType": {
+              "type": "string",
+              "enum": [
+                "image/png",
+                "image/jpeg",
+                "image/webp",
+                "image/gif",
+                "text/plain",
+                "application/json",
+                "application/pdf",
+                "application/octet-stream"
+              ]
+            },
+            "size": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 524288
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "kind",
+            "name",
+            "mediaType",
+            "size",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "upload_chunk"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            },
+            "content": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 32768,
+              "pattern": "^[A-Za-z0-9+/]*={0,2}$"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId",
+            "offset",
+            "content"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "commit_upload"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "discard_upload"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_thinking"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_mode"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_permission"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_output_style"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_queue_policy"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "kind",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_config"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 2000
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "reset_config"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_skill"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            },
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId",
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_mcp"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            },
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId",
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "reload_extensions"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "reload_skills"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "authorize_mcp"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "reconnect_mcp"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "add_mcp"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "remove_mcp"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "install_plugin"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "uninstall_plugin"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "steer"
+            },
+            "text": {
+              "$ref": "#/$defs/Prompt"
+            }
+          },
+          "required": [
+            "kind",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_auto_compaction"
+            },
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_auto_retry"
+            },
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "abort_retry"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "stop_task"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "close"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "restore_preview"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "restore_apply"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId",
+            "version"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "native_rename"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "kind",
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "native_archive"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            },
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId",
+            "enabled"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "native_delete"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "start_auth"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "cancel_auth"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "set_goal"
+            },
+            "text": {
+              "$ref": "#/$defs/Prompt"
+            }
+          },
+          "required": [
+            "kind",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "clear_goal"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "review"
+            },
+            "resourceId": {
+              "$ref": "#/$defs/Id"
+            }
+          },
+          "required": [
+            "kind",
+            "resourceId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "review_targets"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "native_queue_policy"
+            },
+            "value": {
+              "type": "string",
+              "enum": [
+                "all",
+                "one-at-a-time"
+              ]
+            },
+            "target": {
+              "type": "string",
+              "enum": [
+                "steering",
+                "follow_up"
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "value",
+            "target"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "resume"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "WorkspaceField": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "enum": [
+            "text",
+            "value",
+            "name",
+            "enabled",
+            "query"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "text",
+            "select",
+            "boolean"
+          ]
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 200
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "required": [
+              "value",
+              "label"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 100
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4000
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceControl": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "request": {
+          "$ref": "#/$defs/WorkspaceRequest"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/WorkspaceField"
+          },
+          "maxItems": 8
+        },
+        "confirm": {
+          "type": "boolean"
+        },
+        "notice": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "request",
+        "confirm"
+      ],
+      "additionalProperties": false
+    },
+    "SessionOrigin": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "sourceSessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "resourceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "resume",
+            "fork",
+            "clone",
+            "attach",
+            "import"
+          ]
+        },
+        "pointId": {
+          "$ref": "#/$defs/Id"
+        },
+        "pointLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "projectHistory": {
+          "const": true
+        }
+      },
+      "required": [
+        "sessionId",
+        "resourceId",
+        "mode"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "import"
+              }
+            },
+            "required": [
+              "mode"
+            ],
+            "type": "object"
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "sourceSessionId"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "sourceSessionId": {}
+                  }
+                },
+                {
+                  "required": [
+                    "pointId"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "pointId": {}
+                  }
+                },
+                {
+                  "required": [
+                    "pointLabel"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "pointLabel": {}
+                  }
+                }
+              ]
+            }
+          },
+          "else": {
+            "required": [
+              "sourceSessionId"
+            ],
+            "type": "object",
+            "properties": {
+              "sourceSessionId": {}
+            }
+          }
+        }
+      ]
+    },
+    "SessionPreset": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "resourceId": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "sessionId",
+        "resourceId"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 4000
+        },
+        "state": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 100
+        },
+        "request": {
+          "$ref": "#/$defs/WorkspaceRequest"
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/WorkspaceControl"
+          },
+          "maxItems": 8
+        },
+        "referenceId": {
+          "$ref": "#/$defs/Id"
+        },
+        "origin": {
+          "$ref": "#/$defs/SessionOrigin"
+        },
+        "preset": {
+          "$ref": "#/$defs/SessionPreset"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "mediaType": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 100
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceTransfer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "mediaType": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "nextOffset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "content": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 32768
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "uploading",
+            "received",
+            "accepted",
+            "download"
+          ]
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "eof": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "mediaType",
+        "size",
+        "offset",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "WorkspaceView": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "notice": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 4000
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/WorkspaceEntry"
+          },
+          "maxItems": 100
+        },
+        "controls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/WorkspaceControl"
+          },
+          "maxItems": 60
+        },
+        "text": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 24000
+        },
+        "transfer": {
+          "$ref": "#/$defs/WorkspaceTransfer"
+        },
+        "externalUrl": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 4096,
+          "pattern": "^https://"
+        },
+        "prefill": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 4000
+        },
+        "requestKind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "queuePolicy": {
+          "type": "string",
+          "enum": [
+            "automatic",
+            "manual"
+          ]
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "title",
+        "notice",
+        "entries",
+        "controls"
+      ],
+      "additionalProperties": false
+    },
+    "SessionMetadata": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "pinned": {
+          "type": "boolean"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "maxItems": 10
+        },
+        "archived": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "DeleteHistory": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "platform"
+          ]
+        },
+        "includeDescendants": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "revision",
+        "scope",
+        "includeDescendants"
+      ],
+      "additionalProperties": false
+    },
+    "HistoryExport": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "const": "weagent-transcript/1"
+        },
+        "exportedAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "session": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "agent": {
+              "type": "string",
+              "minLength": 0,
+              "maxLength": 100
+            },
+            "parentSessionId": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "title",
+            "agent",
+            "parentSessionId"
+          ],
+          "additionalProperties": false
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "type": "string",
+                "enum": [
+                  "user",
+                  "assistant"
+                ]
+              },
+              "text": {
+                "type": "string",
+                "minLength": 0,
+                "maxLength": 4000
+              },
+              "createdAt": {
+                "$ref": "#/$defs/Timestamp"
+              }
+            },
+            "required": [
+              "role",
+              "text"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 100
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "format",
+        "exportedAt",
+        "session",
+        "items",
+        "truncated"
+      ],
+      "additionalProperties": false
+    },
+    "ImportHistory": {
+      "type": "object",
+      "properties": {
+        "nodeId": {
+          "$ref": "#/$defs/Id"
+        },
+        "projectId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agentId": {
+          "$ref": "#/$defs/Id"
+        },
+        "transcript": {
+          "$ref": "#/$defs/HistoryExport",
+          "description": "At most the HTTP body limit; import is always read-only."
+        }
+      },
+      "required": [
+        "nodeId",
+        "projectId",
+        "agentId",
+        "transcript"
+      ],
+      "additionalProperties": false
+    },
+    "SubscriptionTemplate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "approval",
+            "question",
+            "completed",
+            "failed"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "SubscriptionConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "templates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SubscriptionTemplate"
+          },
+          "maxItems": 5
+        },
+        "notice": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "enabled",
+        "templates",
+        "notice"
+      ],
+      "additionalProperties": false
+    },
+    "SubscriptionConsent": {
+      "type": "object",
+      "properties": {
+        "choices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "templateId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accept",
+                  "reject",
+                  "ban",
+                  "filter"
+                ]
+              }
+            },
+            "required": [
+              "templateId",
+              "decision"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 5
+        },
+        "nonce": {
+          "$ref": "#/$defs/Id"
+        }
+      },
+      "required": [
+        "choices",
+        "nonce"
+      ],
+      "additionalProperties": false
+    },
+    "SharePermission": {
+      "type": "string",
+      "enum": [
+        "read",
+        "control"
+      ]
+    },
+    "CreateShare": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/$defs/SharePermission"
+        },
+        "ttlSeconds": {
+          "type": "integer",
+          "minimum": 900,
+          "maximum": 604800
+        }
+      },
+      "required": [
+        "permission",
+        "ttlSeconds"
+      ],
+      "additionalProperties": false
+    },
+    "ShareToken": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "minLength": 43,
+      "maxLength": 43
+    },
+    "RedeemShare": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "$ref": "#/$defs/ShareToken"
+        }
+      },
+      "required": [
+        "token"
+      ],
+      "additionalProperties": false
+    },
+    "SessionShare": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/Id"
+        },
+        "sessionId": {
+          "$ref": "#/$defs/Id"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "permission": {
+          "$ref": "#/$defs/SharePermission"
+        },
+        "createdAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "expiresAt": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "revokedAt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "acceptedAt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Timestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recipientName": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "sessionId",
+        "title",
+        "permission",
+        "createdAt",
+        "expiresAt",
+        "revokedAt",
+        "acceptedAt",
+        "recipientName"
+      ],
+      "additionalProperties": false
+    },
+    "ShareInvitation": {
+      "type": "object",
+      "properties": {
+        "share": {
+          "$ref": "#/$defs/SessionShare"
+        },
+        "token": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ShareToken"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "serverTime": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "share",
+        "token",
+        "serverTime"
+      ],
+      "additionalProperties": false
+    },
+    "ShareList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SessionShare"
+          },
+          "maxItems": 100
+        },
+        "nextPageToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "serverTime": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "items",
+        "nextPageToken",
+        "serverTime"
+      ],
+      "additionalProperties": false
+    },
+    "SharedSession": {
+      "type": "object",
+      "properties": {
+        "share": {
+          "$ref": "#/$defs/SessionShare"
+        },
+        "session": {
+          "$ref": "#/$defs/Session"
+        },
+        "ownerName": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "agentName": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "projectName": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "nodeName": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "nodeOnline": {
+          "type": "boolean"
+        },
+        "requests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InteractionRequest"
+          },
+          "maxItems": 20
+        },
+        "serverTime": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "share",
+        "session",
+        "ownerName",
+        "agentName",
+        "projectName",
+        "nodeName",
+        "nodeOnline",
+        "requests",
+        "serverTime"
+      ],
+      "additionalProperties": false
+    },
+    "SharedCommand": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "send"
+            },
+            "payload": {
+              "type": "object",
+              "properties": {
+                "expectedTurnId": {
+                  "$ref": "#/$defs/Id"
+                },
+                "text": {
+                  "$ref": "#/$defs/Prompt"
+                },
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "send",
+                    "queue"
+                  ]
+                },
+                "capabilityRevision": {
+                  "$ref": "#/$defs/Sequence"
+                }
+              },
+              "required": [
+                "expectedTurnId",
+                "text",
+                "mode",
+                "capabilityRevision"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "action",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "cancel"
+            },
+            "payload": {
+              "$ref": "#/$defs/CancelTurn"
+            }
+          },
+          "required": [
+            "action",
+            "payload"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "respond"
+            },
+            "requestId": {
+              "$ref": "#/$defs/Id"
+            },
+            "payload": {
+              "$ref": "#/$defs/RespondRequest"
+            }
+          },
+          "required": [
+            "action",
+            "requestId",
+            "payload"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ShareActivity": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/Id"
+              },
+              "shareId": {
+                "$ref": "#/$defs/Id"
+              },
+              "actorName": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "send",
+                  "cancel",
+                  "respond"
+                ]
+              },
+              "state": {
+                "type": "string",
+                "maxLength": 30
+              },
+              "createdAt": {
+                "$ref": "#/$defs/Timestamp"
+              }
+            },
+            "required": [
+              "id",
+              "shareId",
+              "actorName",
+              "action",
+              "state",
+              "createdAt"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 100
+        },
+        "nextPageToken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "nextPageToken"
+      ],
+      "additionalProperties": false
+    },
+    "UserProfile": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "avatarBase64": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 49152,
+              "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "displayName",
+        "avatarBase64",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "UpdateUserProfile": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "avatarBase64": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 49152,
+              "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "displayName",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectHistory": {
+      "type": "object",
+      "properties": {
+        "nodeId": {
+          "$ref": "#/$defs/Id"
+        },
+        "projectId": {
+          "$ref": "#/$defs/Id"
+        },
+        "agentId": {
+          "$ref": "#/$defs/Id"
+        },
+        "capabilityRevision": {
+          "$ref": "#/$defs/Sequence"
+        },
+        "request": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/WorkspaceRequest"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "history",
+                    "history_messages"
+                  ]
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "nodeId",
+        "projectId",
+        "agentId",
+        "capabilityRevision",
+        "request"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
