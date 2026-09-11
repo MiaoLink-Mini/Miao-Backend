@@ -7,10 +7,10 @@ on:
   workflow_dispatch:
     inputs:
       frontend_ref:
-        description: 'Explicit GoLink-Frontend commit, tag or branch'
+        description: 'Explicit Miao-Frontend commit, tag or branch'
         type: string
         required: true
-        default: 'e10f605e2505afd1bf4a1bdaab90f42ca145535f'
+        default: '00a2650f4bf3d320ca26282cd759a96c1a56edb0'
 
 permissions:
   contents: read
@@ -138,8 +138,8 @@ jobs:
       - name: Check out the reviewed frontend version
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: GoLink-Mini/GoLink-Frontend
-          ref: ${{ inputs.frontend_ref || 'e10f605e2505afd1bf4a1bdaab90f42ca145535f' }}
+          repository: MiaoLink-Mini/Miao-Frontend
+          ref: ${{ inputs.frontend_ref || '00a2650f4bf3d320ca26282cd759a96c1a56edb0' }}
           path: WeAgent-Frontend
           persist-credentials: false
 
