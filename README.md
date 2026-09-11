@@ -52,20 +52,20 @@ Gateway 使用项目自有协议 **`weagent/1`**，不是某个 Agent 的原生�
 ## 获取源码
 
 ```bash
-git clone https://github.com/MiaoLink-Mini/Miao-Backend.git WeAgent-Backend
-git clone https://github.com/MiaoLink-Mini/Miao-Frontend.git WeAgent-Frontend
-cd WeAgent-Backend
+git clone https://github.com/MiaoLink-Mini/Miao-Backend.git Miao-Backend
+git clone https://github.com/MiaoLink-Mini/Miao-Frontend.git Miao-Frontend
+cd Miao-Backend
 ```
 
 前端不是 Gateway 二进制的运行依赖，但完整 JavaScript 回归会读取其页面与需求清单。现有工具默认按以下目录布局查找：
 
 ```text
 workspace/
-├── WeAgent-Backend/
-└── WeAgent-Frontend/
+├── Miao-Backend/
+└── Miao-Frontend/
 ```
 
-本地目录名是代码仍在使用的兼容约定。Go 模块名 `weagent/backend`、协议名 `weagent/1` 和环境变量名也应保持原样，不应随品牌名做批量替换。
+本地目录名使用 `Miao-*`。Go 模块名 `weagent/backend`、协议名 `weagent/1` 和环境变量名保持原样，不随品牌名更改。
 
 ## 启动方式
 
